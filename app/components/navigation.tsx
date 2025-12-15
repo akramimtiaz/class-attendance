@@ -18,7 +18,7 @@ export default function Navigation() {
 
   return (
     <nav className="border-b bg-card">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style={{ borderColor: 'red', borderStyle: 'solid', borderWidth: 1 }}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
