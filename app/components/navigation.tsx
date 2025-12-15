@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { BookOpen, Users, GraduationCap, LayoutDashboard } from "lucide-react";
 
 const navigationItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/students", label: "Students", icon: GraduationCap },
   { href: "/teachers", label: "Teachers", icon: Users },
   { href: "/classes", label: "Classes", icon: BookOpen },
