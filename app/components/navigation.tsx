@@ -6,18 +6,19 @@ import clsx from "clsx";
 import { BookOpen, Users, GraduationCap, LayoutDashboard } from "lucide-react";
 
 const navigationItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/students", label: "Students", icon: GraduationCap },
-  { href: "/admin/teachers", label: "Teachers", icon: Users },
-  { href: "/admin/classes", label: "Classes", icon: BookOpen },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/students", label: "Students", icon: GraduationCap },
+  { href: "/teachers", label: "Teachers", icon: Users },
+  { href: "/classes", label: "Classes", icon: BookOpen },
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
+  console.log(pathname)
 
   return (
     <nav className="border-b bg-card">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" style={{ borderColor: 'red', borderStyle: 'solid', borderWidth: 1 }}>
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
@@ -50,7 +51,7 @@ export default function Navigation() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Admin User</span>
+            <span className="text-sm text-muted-foreground">Username</span>
             <button className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
               Logout
             </button>
