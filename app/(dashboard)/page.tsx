@@ -7,10 +7,9 @@ import {
   BookOpen,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { students, teachers } from '@/lib/constants';
 
-export default function Dashboard() {
-  const students = [];
-  const teachers = [];
+export default function DashboardPage() {
   const presentCount = 0;
   const absentCount = 0;
   const recentAttendance = [];

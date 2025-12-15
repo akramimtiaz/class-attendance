@@ -1,4 +1,4 @@
-import Navigation from "@/app/components/navigation";
+import Navigation from "@/components/navigation";
 
 export default function Layout({
   children,
