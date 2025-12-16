@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   uuid,
@@ -109,6 +110,83 @@ export const studentAttendance = pgTable("student_attendance", {
     .defaultNow()
     .notNull(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  classesAssigned: many(classes),
+  classSessionsAsTeacher: many(classSessions, {
+    relationName: "teacher",
+  }),
+  classSessionsMarked: many(classSessions, {
+    relationName: "sessionMarker",
+  }),
+  classSessionsCreated: many(classSessions, {
+    relationName: "sessionCreator",
+  }),
+  attendanceMarked: many(studentAttendance),
+}));
+
+export const studentsRelations = relations(students, ({ many }) => ({
+  classStudents: many(classStudents),
+  attendance: many(studentAttendance),
+}));
+
+export const classesRelations = relations(classes, ({ one, many }) => ({
+  assignedTeacher: one(users, {
+    fields: [classes.assignedTeacherId],
+    references: [users.id],
+  }),
+  classStudents: many(classStudents),
+  sessions: many(classSessions),
+}));
+
+export const classStudentsRelations = relations(classStudents, ({ one }) => ({
+  class: one(classes, {
+    fields: [classStudents.classId],
+    references: [classes.id],
+  }),
+  student: one(students, {
+    fields: [classStudents.studentId],
+    references: [students.id],
+  }),
+}));
+
+export const classSessionsRelations = relations(classSessions, ({ one, many }) => ({
+  class: one(classes, {
+    fields: [classSessions.classId],
+    references: [classes.id],
+  }),
+  teacher: one(users, {
+    fields: [classSessions.teacherId],
+    references: [users.id],
+    relationName: "teacher",
+  }),
+  markedBy: one(users, {
+    fields: [classSessions.markedByUserId],
+    references: [users.id],
+    relationName: "sessionMarker",
+  }),
+  createdBy: one(users, {
+    fields: [classSessions.createdBy],
+    references: [users.id],
+    relationName: "sessionCreator",
+  }),
+  attendance: many(studentAttendance),
+}));
+
+export const studentAttendanceRelations = relations(studentAttendance, ({ one }) => ({
+  session: one(classSessions, {
+    fields: [studentAttendance.sessionId],
+    references: [classSessions.id],
+  }),
+  student: one(students, {
+    fields: [studentAttendance.studentId],
+    references: [students.id],
+  }),
+  markedBy: one(users, {
+    fields: [studentAttendance.markedByUserId],
+    references: [users.id],
+  }),
+}));
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
