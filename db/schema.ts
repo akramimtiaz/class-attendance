@@ -19,6 +19,8 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").notNull(),
   phoneNumber: text("phone_number"),
   isActive: boolean("is_active").default(true).notNull(),
+  isDeleted: boolean("is_deleted").default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -34,6 +36,8 @@ export const students = pgTable("students", {
   guardianName: text("guardian_name"),
   guardianContact: text("guardian_contact"),
   isActive: boolean("is_active").default(true).notNull(),
+  isDeleted: boolean("is_deleted").default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -45,6 +49,8 @@ export const classes = pgTable("classes", {
   dayOfWeek: text("day_of_week").notNull(),
   assignedTeacherId: uuid("assigned_teacher_id").notNull().references(() => users.id),
   isActive: boolean("is_active").default(true).notNull(),
+  isDeleted: boolean("is_deleted").default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -70,8 +76,14 @@ export const classSessions = pgTable("class_sessions", {
     .references(() => classes.id, { onDelete: "cascade" }),
   teacherId: uuid("teacher_id").notNull().references(() => users.id),
   sessionDate: date("session_date").notNull(),
-  isCancelled: boolean("is_cancelled").default(false).notNull(),
+  cancelled: boolean("cancelled").default(false).notNull(),
   cancelReason: text("cancel_reason"),
+  markedByUserId: uuid("marked_by_user_id")
+    .notNull()
+    .references(() => users.id),
+  markedAt: timestamp("marked_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
   createdBy: uuid("created_by")
     .notNull()
     .references(() => users.id),
@@ -89,23 +101,6 @@ export const studentAttendance = pgTable("student_attendance", {
     .notNull()
     .references(() => students.id, { onDelete: "cascade" }),
   attended: boolean("attended").default(true),
-  markedByUserId: uuid("marked_by_user_id")
-    .notNull()
-    .references(() => users.id),
-  markedAt: timestamp("marked_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
-
-export const teacherAttendance = pgTable("teacher_attendance", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  sessionId: uuid("session_id")
-    .notNull()
-    .references(() => classSessions.id, { onDelete: "cascade" }),
-  teacherId: uuid("teacher_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  attended: boolean("attended"),
   markedByUserId: uuid("marked_by_user_id")
     .notNull()
     .references(() => users.id),
