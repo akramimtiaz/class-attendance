@@ -8,6 +8,7 @@ import {
   date,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "teacher"]);
 
@@ -108,3 +109,24 @@ export const studentAttendance = pgTable("student_attendance", {
     .defaultNow()
     .notNull(),
 });
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Student = typeof students.$inferSelect;
+export type NewStudent = typeof students.$inferInsert;
+
+export type Class = typeof classes.$inferSelect;
+export type NewClass = typeof classes.$inferInsert;
+
+export type ClassStudent = typeof classStudents.$inferSelect;
+export type NewClassStudent = typeof classStudents.$inferInsert;
+
+export type ClassSession = typeof classSessions.$inferSelect;
+export type NewClassSession = typeof classSessions.$inferInsert;
+
+export type StudentAttendance = typeof studentAttendance.$inferSelect;
+export type NewStudentAttendance = typeof studentAttendance.$inferInsert;
+
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
