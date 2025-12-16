@@ -18,7 +18,11 @@ export async function getStudentById(id: string) {
   });
 }
 
-export async function getStudents(page: number = 1, limit: number = 5) {
+export async function getStudents(
+  includeAttendance: boolean = false,
+  page: number = 1,
+  limit: number = 5
+) {
   const offset = (page - 1) * limit;
   return db.query.students.findMany({
     where: eq(students.isDeleted, false),
@@ -28,6 +32,9 @@ export async function getStudents(page: number = 1, limit: number = 5) {
           class: true,
         },
       },
+      ...(includeAttendance && {
+        attendance: true,
+      }),
     },
     orderBy: desc(students.createdAt),
     limit,
