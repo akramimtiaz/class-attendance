@@ -19,9 +19,6 @@ type StudentDialogProps = {
 
 export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
   const [open, setOpen] = useState(false);
-  if (open) {
-    console.log(student);
-  }
 
   const isReadOnly = mode === "view"
   const title = mode === "create" ? "Add New Student" : mode === "edit" ? "Edit Student" : "Student Details"
