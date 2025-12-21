@@ -8,6 +8,13 @@
       "when": 1765847744640,
       "tag": "0000_glossy_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766284633072,
+      "tag": "0001_calm_norrin_radd",
+      "breakpoints": true
     }
   ]
 }
