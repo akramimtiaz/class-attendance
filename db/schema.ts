@@ -12,7 +12,17 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "teacher"]);
+export const dayOfWeekEnum = pgEnum("day_of_week", [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+  "SATURDAY",
+  "SUNDAY",
+]);
 
+// Tables
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
@@ -48,7 +58,7 @@ export const students = pgTable("students", {
 export const classes = pgTable("classes", {
   id: uuid("id").defaultRandom().primaryKey(),
   className: text("class_name").notNull(),
-  dayOfWeek: text("day_of_week").notNull(),
+  dayOfWeek: dayOfWeekEnum("day_of_week").notNull(),
   assignedTeacherId: uuid("assigned_teacher_id").notNull().references(() => users.id),
   isActive: boolean("is_active").default(true).notNull(),
   isDeleted: boolean("is_deleted").default(false),
@@ -81,11 +91,8 @@ export const classSessions = pgTable("class_sessions", {
   cancelled: boolean("cancelled").default(false).notNull(),
   cancelReason: text("cancel_reason"),
   markedByUserId: uuid("marked_by_user_id")
-    .notNull()
     .references(() => users.id),
-  markedAt: timestamp("marked_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+  markedAt: timestamp("marked_at", { withTimezone: true }),
   createdBy: uuid("created_by")
     .notNull()
     .references(() => users.id),
@@ -111,6 +118,7 @@ export const studentAttendance = pgTable("student_attendance", {
     .notNull(),
 });
 
+// Relations
 export const usersRelations = relations(users, ({ many }) => ({
   classesAssigned: many(classes),
   classSessionsAsTeacher: many(classSessions, {
@@ -136,7 +144,7 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
     references: [users.id],
   }),
   classStudents: many(classStudents),
-  sessions: many(classSessions),
+  classSessions: many(classSessions),
 }));
 
 export const classStudentsRelations = relations(classStudents, ({ one }) => ({
