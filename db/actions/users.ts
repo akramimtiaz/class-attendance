@@ -4,6 +4,7 @@ import { eq, and, desc } from "drizzle-orm";
 // import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
+import { itemsPerPage } from "@/lib/constants";
 
 export async function getUserById(id: string) {
   return await db.query.users.findFirst({
@@ -17,7 +18,7 @@ export async function getUserByEmail(email: string) {
   });
 }
 
-export async function getTeachers(page: number = 1, limit: number = 5) {
+export async function getTeachers(page: number = 1, limit: number = itemsPerPage) {
   const offset = (page - 1) * limit;
   return await db.query.users.findMany({
     where: and(

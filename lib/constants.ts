@@ -1,3 +1,5 @@
+export const itemsPerPage = 20;
+
 export const teachers = [
   {
     id: 1,

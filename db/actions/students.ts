@@ -4,6 +4,7 @@ import { desc, eq } from "drizzle-orm";
 // import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
 import { students } from "@/db/schema";
+import { itemsPerPage } from "@/lib/constants";
 
 export async function getStudentById(id: string) {
   return db.query.students.findFirst({
@@ -21,7 +22,7 @@ export async function getStudentById(id: string) {
 export async function getStudents(
   includeAttendance: boolean = false,
   page: number = 1,
-  limit: number = 5
+  limit: number = itemsPerPage
 ) {
   const offset = (page - 1) * limit;
   return db.query.students.findMany({
