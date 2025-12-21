@@ -18,6 +18,8 @@ export async function getUserByEmail(email: string) {
   });
 }
 
+export type TeacherWithClasses = Awaited<ReturnType<typeof getTeachers>>[number];
+
 export async function getTeachers(page: number = 1, limit: number = itemsPerPage) {
   const offset = (page - 1) * limit;
   return await db.query.users.findMany({
@@ -25,8 +27,22 @@ export async function getTeachers(page: number = 1, limit: number = itemsPerPage
       eq(users.role, "teacher"),
       eq(users.isDeleted, false)
     ),
+    with: {
+      classesAssigned: {
+        with: {
+          classStudents: true,
+        }
+      }
+    },
     orderBy: desc(users.createdAt),
     limit,
     offset,
   });
+}
+
+export async function getTotalTeachersCount() {
+  return db.$count(
+    users,
+    and(eq(users.role, "teacher"), eq(users.isDeleted, false))
+  );
 }

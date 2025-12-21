@@ -7,18 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import type { TeacherWithClasses } from "@/db/actions/users"
 
 type TeacherDialogProps = {
   trigger: React.ReactNode
   mode: "create" | "edit" | "view"
-  teacher?: {
-    id: number
-    name: string
-    email: string
-    phone: string
-    specialization: string
-    joinedDate: string
-  }
+  teacher: TeacherWithClasses
 }
 
 export function TeacherDialog({ trigger, mode, teacher }: TeacherDialogProps) {
@@ -40,15 +34,6 @@ export function TeacherDialog({ trigger, mode, teacher }: TeacherDialogProps) {
               <Label htmlFor="name">Teacher Name</Label>
               <Input id="name" placeholder="Enter teacher name" defaultValue={teacher?.name} disabled={isReadOnly} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="specialization">Specialization</Label>
-              <Input
-                id="specialization"
-                placeholder="e.g., Tajweed, Memorization"
-                defaultValue={teacher?.specialization}
-                disabled={isReadOnly}
-              />
-            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -64,16 +49,16 @@ export function TeacherDialog({ trigger, mode, teacher }: TeacherDialogProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="+1 (555) 000-0000" defaultValue={teacher?.phone} disabled={isReadOnly} />
+              <Input id="phone" placeholder="+1 (555) 000-0000" defaultValue={teacher?.phoneNumber ?? ''} disabled={isReadOnly} />
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          {/* <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="joined">Join Date</Label>
               <Input id="joined" type="date" defaultValue={teacher?.joinedDate} disabled={isReadOnly} />
             </div>
-          </div>
+          </div> */}
 
           {!isReadOnly && (
             <div className="flex justify-end gap-3 mt-4">
