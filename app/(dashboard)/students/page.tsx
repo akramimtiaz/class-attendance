@@ -5,9 +5,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { StudentDialog } from "@/components/student-dialog"
 import { Plus, Search, Eye, Pencil, Mail, Phone } from "lucide-react"
-import { students } from "@/lib/constants"
+// import { students } from "@/lib/constants"
+import { getStudents } from "@/db/actions/students"
 
 export default async function StudentsPage() {
+  const students = await getStudents();
+
   return (
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex items-center justify-between">
@@ -59,29 +62,22 @@ export default async function StudentsPage() {
                         {student.name}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Parent: {student.parentName}
+                        Parent Name: {student.guardianName}
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 mt-2">
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <Mail className="h-3.5 w-3.5" />
-                          {student.email}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <Phone className="h-3.5 w-3.5" />
-                          {student.phone}
-                        </div>
+                      <div className="text-sm text-muted-foreground">
+                        Parent Contact: {student.guardianContact}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                    <div className="flex flex-col items-end gap-1.5">
+                    {/* <div className="flex flex-col items-end gap-1.5">
                       <Badge variant="secondary" className="font-normal">
                         {student.class}
                       </Badge>
                       <span className="text-sm font-medium text-accent">
                         {student.attendance}
                       </span>
-                    </div>
+                    </div> */}
                     <div className="flex gap-2">
                       <StudentDialog
                         mode="view"

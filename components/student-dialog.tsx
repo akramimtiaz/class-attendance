@@ -7,20 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Student } from "@/db/schema"
 
 type StudentDialogProps = {
   trigger: React.ReactNode
   mode: "create" | "edit" | "view"
-  student?: {
-    id: number
-    name: string
-    parentName: string
-    email: string
-    phone: string
-    class: string
-    enrolledDate: string
-  }
+  student?: Student; 
 }
 
 export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
@@ -40,54 +33,53 @@ export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Student Name</Label>
-              <Input id="name" placeholder="Enter student name" defaultValue={student?.name} disabled={isReadOnly} />
+              <Input
+                id="name"
+                placeholder="Enter student name"
+                defaultValue={student?.name}
+                disabled={isReadOnly}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="parent">Parent/Guardian Name</Label>
               <Input
                 id="parent"
                 placeholder="Enter parent name"
-                defaultValue={student?.parentName}
+                defaultValue={student?.guardianName ?? ""}
                 disabled={isReadOnly}
               />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="student@example.com"
-                defaultValue={student?.email}
-                disabled={isReadOnly}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="+1 (555) 000-0000" defaultValue={student?.phone} disabled={isReadOnly} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="class">Assigned Class</Label>
-              <Select defaultValue={student?.class} disabled={isReadOnly}>
+              {/* <Select defaultValue={student?.class} disabled={isReadOnly}>
                 <SelectTrigger id="class">
                   <SelectValue placeholder="Select a class" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner-quran">Beginner Quran</SelectItem>
-                  <SelectItem value="intermediate-tajweed">Intermediate Tajweed</SelectItem>
-                  <SelectItem value="advanced-memorization">Advanced Memorization</SelectItem>
-                  <SelectItem value="arabic-language">Arabic Language</SelectItem>
+                  <SelectItem value="intermediate-tajweed">
+                    Intermediate Tajweed
+                  </SelectItem>
+                  <SelectItem value="advanced-memorization">
+                    Advanced Memorization
+                  </SelectItem>
+                  <SelectItem value="arabic-language">
+                    Arabic Language
+                  </SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
             </div>
             <div className="space-y-2">
               <Label htmlFor="enrolled">Enrollment Date</Label>
-              <Input id="enrolled" type="date" defaultValue={student?.enrolledDate} disabled={isReadOnly} />
+              <Input
+                id="enrolled"
+                type="date"
+                defaultValue={student?.createdAt?.toDateString() ?? ""}
+                disabled={isReadOnly}
+              />
             </div>
           </div>
 
@@ -96,7 +88,9 @@ export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setOpen(false)}>{mode === "create" ? "Add Student" : "Save Changes"}</Button>
+              <Button onClick={() => setOpen(false)}>
+                {mode === "create" ? "Add Student" : "Save Changes"}
+              </Button>
             </div>
           )}
 
@@ -110,5 +104,5 @@ export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
