@@ -1,4 +1,4 @@
-export const itemsPerPage = 20;
+export const itemsPerPage = 5;
 
 export const teachers = [
   {
@@ -35,7 +35,6 @@ export const teachers = [
     activeClasses: 1,
   },
 ]
-
 
 export const students = [
   {

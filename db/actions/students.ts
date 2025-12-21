@@ -19,6 +19,8 @@ export async function getStudentById(id: string) {
   });
 }
 
+export type StudentWithClasses = Awaited<ReturnType<typeof getStudents>>[number];
+
 export async function getStudents(
   includeAttendance: boolean = false,
   page: number = 1,
@@ -41,4 +43,8 @@ export async function getStudents(
     limit,
     offset,
   });
+}
+
+export async function getTotalStudentCount() {
+  return db.$count(students, eq(students.isDeleted, false));
 }

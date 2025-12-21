@@ -8,16 +8,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Student } from "@/db/schema"
+import { type StudentWithClasses } from "@/db/actions/students"
+import { Badge } from "./ui/badge"
 
 type StudentDialogProps = {
   trigger: React.ReactNode
   mode: "create" | "edit" | "view"
-  student?: Student; 
+  student: StudentWithClasses  
 }
 
 export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  if (open) {
+    console.log(student);
+  }
 
   const isReadOnly = mode === "view"
   const title = mode === "create" ? "Add New Student" : mode === "edit" ? "Edit Student" : "Student Details"
@@ -31,7 +35,7 @@ export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
         </DialogHeader>
         <div className="grid gap-6 py-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
+            <div className="grid col-span-2 space-y-2">
               <Label htmlFor="name">Student Name</Label>
               <Input
                 id="name"
@@ -41,47 +45,36 @@ export function StudentDialog({ trigger, mode, student }: StudentDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="parent">Parent/Guardian Name</Label>
+              <Label htmlFor="parent">Parent Name</Label>
               <Input
-                id="parent"
+                id="parentName"
                 placeholder="Enter parent name"
                 defaultValue={student?.guardianName ?? ""}
                 disabled={isReadOnly}
               />
             </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="class">Assigned Class</Label>
-              {/* <Select defaultValue={student?.class} disabled={isReadOnly}>
-                <SelectTrigger id="class">
-                  <SelectValue placeholder="Select a class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="beginner-quran">Beginner Quran</SelectItem>
-                  <SelectItem value="intermediate-tajweed">
-                    Intermediate Tajweed
-                  </SelectItem>
-                  <SelectItem value="advanced-memorization">
-                    Advanced Memorization
-                  </SelectItem>
-                  <SelectItem value="arabic-language">
-                    Arabic Language
-                  </SelectItem>
-                </SelectContent>
-              </Select> */}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="enrolled">Enrollment Date</Label>
+              <Label htmlFor="parent">Parent Phone No.</Label>
               <Input
-                id="enrolled"
-                type="date"
-                defaultValue={student?.createdAt?.toDateString() ?? ""}
+                id="parentPhoneNo"
+                placeholder="Enter parent phone no."
+                defaultValue={student?.guardianContact ?? ""}
                 disabled={isReadOnly}
               />
             </div>
           </div>
+          
+          <div className="font-semibold text-sm">
+            Assigned Classes
+          </div>
+          {student?.classStudents.map((c) => (
+            <div key={c.id} className="grid gap-4 md:grid-cols-2">
+              <Badge>{c.class.className}</Badge>
+              <div className="font-normal text-sm space-y-2">
+                {c.enrolledAt.toDateString()}
+              </div>
+            </div>
+          ))}
 
           {!isReadOnly && (
             <div className="flex justify-end gap-3 mt-4">
