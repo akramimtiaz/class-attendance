@@ -12,8 +12,6 @@ type StudentProps = {
 };
 
 export default function Student({ student }: StudentProps) {
-  const classes = student.classStudents.map(cs => cs.class);
-
   return (
     <div
       key={student.id}
@@ -37,10 +35,10 @@ export default function Student({ student }: StudentProps) {
       </div>
       <div className="flex items-center gap-3 sm:gap-4 shrink-0">
         <div className="flex flex-row gap-3">
-          {classes.map((c) => (
-            <Badge key={c.id}>{c.className}</Badge>
+          {student.classStudents.map((c) => (
+            <Badge key={c.id}>{c.class.className}</Badge>
           ))}
-          {!classes.length && (
+          {!student.classStudents.length && (
             <Badge variant={'secondary'}>Not Enrolled</Badge>
           )}
         </div>
