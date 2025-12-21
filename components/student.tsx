@@ -46,7 +46,7 @@ export default function Student({ student }: StudentProps) {
         </div>
         <div className="flex gap-2">
           <StudentDialog
-            mode="view"
+            defaultMode="view"
             student={student}
             trigger={
               <Button variant="outline" size="sm">
