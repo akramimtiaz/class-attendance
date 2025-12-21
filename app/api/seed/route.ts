@@ -11,6 +11,8 @@ const classNames = [
   "Islamic Studies 2",
 ];
 
+const studentAges = [8, 9, 10, 11, 12, 13, 14, 15];
+
 const db = drizzle(process.env.DATABASE_URL!);
 
 const dbSchema = {
@@ -32,6 +34,7 @@ async function seedDb() {
           isActive: f.default({ defaultValue: true }),
           isDeleted: f.default({ defaultValue: false }),
           deletedAt: f.default({ defaultValue: null }),
+          phoneNumber: f.phoneNumber(),
         },
         count: 10,
       },
@@ -40,7 +43,9 @@ async function seedDb() {
           name: f.fullName(),
           isActive: f.default({ defaultValue: true }),
           isDeleted: f.default({ defaultValue: false }),
-          deletedAt: f.default({ defaultValue: null })
+          deletedAt: f.default({ defaultValue: null }),
+          guardianContact: f.phoneNumber(),
+          age: f.valuesFromArray({ values: studentAges }),
         },
         count: 30,
       },
