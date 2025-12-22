@@ -31,10 +31,7 @@ export function StudentDialog({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<StudentDialogProps['defaultMode']>(defaultMode);
 
-  console.log('mode', mode);
-
   const toggleEditMode = () => {
-    console.log('toggling?');
     setMode((prev) => (prev === "view" ? "edit" : "view"));
   };
 
