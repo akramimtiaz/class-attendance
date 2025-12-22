@@ -17,7 +17,7 @@ type TeacherProps = {
 };
 
 export default function Teacher({ teacher }: TeacherProps) {
-  const { classesAssigned, ...rest } = teacher;
+  const { classesAssigned } = teacher;
   const classesCount = classesAssigned.length;
   const studentsCount = classesAssigned.reduce(
     (acc, ca) => acc + ca.classStudents.length,
@@ -68,14 +68,14 @@ export default function Teacher({ teacher }: TeacherProps) {
       </div>
       <div className="flex items-center gap-4 lg:gap-6 ">
         <div className="flex gap-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-h-[85px]">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
             <div className="text-center">
               <div className="text-xl font-bold">{classesCount}</div>
               <div className="text-xs text-muted-foreground">Classes</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-h-[85px]">
             <Users className="h-4 w-4 text-muted-foreground" />
             <div className="text-center">
               <div className="text-xl font-bold">{studentsCount}</div>
@@ -87,7 +87,7 @@ export default function Teacher({ teacher }: TeacherProps) {
         <div className="">
           <TeacherDialog
             mode="view"
-            teacher={rest}
+            teacher={teacher}
             trigger={
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4" />

@@ -3,7 +3,7 @@
 import { eq, and, desc } from "drizzle-orm";
 // import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
-import { users } from "@/db/schema";
+import { classes, users } from "@/db/schema";
 import { itemsPerPage } from "@/lib/constants";
 
 export async function getUserById(id: string) {
@@ -29,10 +29,18 @@ export async function getTeachers(page: number = 1, limit: number = itemsPerPage
     ),
     with: {
       classesAssigned: {
+        columns: {
+          className: true,
+        },
+        where: eq(classes.isActive, true),
         with: {
-          classStudents: true,
-        }
-      }
+          classStudents: {
+            columns: {
+              id: true,
+            },
+          },
+        },
+      },
     },
     orderBy: desc(users.createdAt),
     limit,
