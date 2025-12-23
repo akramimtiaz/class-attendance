@@ -8,15 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ClassWithSessions } from "@/db/actions/classes"
 
 type SessionDialogProps = {
   trigger: React.ReactNode
   mode: "create" | "mark-status"
-  session?: {
-    id: number
-    date: string
-    status: string
-  }
+  session: ClassWithSessions['classSessions'][number];
 }
 
 export function SessionDialog({ trigger, mode, session }: SessionDialogProps) {

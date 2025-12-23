@@ -2,7 +2,7 @@
 
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/db/drizzle";
-import { classes } from "@/db/schema";
+import { classes, classSessions } from "@/db/schema";
 import { itemsPerPage } from "@/lib/constants";
 
 export async function getClassById(id: string) {
@@ -47,8 +47,9 @@ export async function getClasses(
           teacherId: true,
           sessionDate: true,
           markedAt: true,
+          cancelled: true,
         },
-        orderBy: desc(classes.createdAt),
+        orderBy: desc(classSessions.sessionDate),
         limit: 3,
       },
     },

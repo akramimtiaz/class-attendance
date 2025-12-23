@@ -11,6 +11,7 @@ import {
   Clock,
   Calendar,
   CheckCircle,
+  XCircle,
 } from "lucide-react";
 import {
   Collapsible,
@@ -20,6 +21,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { ClassWithSessions } from "@/db/actions/classes";
+import day from 'dayjs';
 
 type ClassComponentProps = {
   classItem: ClassWithSessions;
@@ -93,15 +95,6 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Class Sessions</h3>
-                <SessionDialog
-                  mode="create"
-                  trigger={
-                    <Button variant="outline" size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Session
-                    </Button>
-                  }
-                />
               </div>
               <div className="space-y-2">
                 {classItem.classSessions.map((session) => (
@@ -113,25 +106,21 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
                       <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                       <div>
                         <div className="font-medium">{session.sessionDate}</div>
-                        {/* {!!session.markedAt && (
-                          <div className="text-sm text-muted-foreground mt-1">
-                            Present: {session.present} • Absent:{" "}
-                            {session.absent}
-                          </div>
-                        )} */}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {!!session.markedAt && (
-                        <Badge variant="default" className="bg-accent">
+                      {day(session.markedAt).isBefore(day(), "day") && (
+                        <Badge variant="default">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Completed
                         </Badge>
                       )}
-                      {!session.markedAt && (
+                      {!session?.markedAt ||
+                      day(session.markedAt).isSame(day(), "day") ||
+                      day(session.markedAt).isAfter(day(), "day") ? (
                         <>
                           <Badge variant="secondary">Scheduled</Badge>
-                          {/* <SessionDialog
+                          <SessionDialog
                             mode="mark-status"
                             session={session}
                             trigger={
@@ -139,21 +128,15 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
                                 Mark Status
                               </Button>
                             }
-                          /> */}
+                          />
                         </>
-                      )}
-                      {/* {session.isCancelled && (
+                      ) : null}
+                      {session.cancelled && (
                         <Badge variant="destructive">
                           <XCircle className="h-3 w-3 mr-1" />
                           Cancelled
                         </Badge>
-                      )} */}
-                      {/* {session.status === "holiday" && (
-                        <Badge variant="outline">
-                          <CalendarX className="h-3 w-3 mr-1" />
-                          Holiday
-                        </Badge>
-                      )} */}
+                      )}
                     </div>
                   </div>
                 ))}
