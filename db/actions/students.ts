@@ -3,7 +3,7 @@
 import { desc, eq } from "drizzle-orm";
 // import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
-import { students } from "@/db/schema";
+import { classStudents, students } from "@/db/schema";
 import { itemsPerPage } from "@/lib/constants";
 
 export async function getStudentById(id: string) {
@@ -48,3 +48,18 @@ export async function getStudents(
 export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
+
+export type StudentByClass = Awaited<ReturnType<typeof getStudentsByClass>>[number];
+
+export async function getStudentsByClass(classId: string) {
+  return db.query.classStudents.findMany({
+    where: eq(classStudents.classId, classId),
+    with: {
+      student: {
+        columns: {
+          name: true,
+        }
+      },
+    }
+  })
+};

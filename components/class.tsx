@@ -12,6 +12,7 @@ import {
   Calendar,
   CheckCircle,
   XCircle,
+  Calendar1,
 } from "lucide-react";
 import {
   Collapsible,
@@ -40,7 +41,7 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
         open={openClasses[classItem.id]}
         onOpenChange={() => toggleClass(classItem.id)}
       >
-        <CardHeader className="pb-4">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <Avatar className="h-12 w-12 shrink-0">
@@ -119,7 +120,6 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
                       day(session.markedAt).isSame(day(), "day") ||
                       day(session.markedAt).isAfter(day(), "day") ? (
                         <>
-                          <Badge variant="secondary">Scheduled</Badge>
                           <SessionDialog
                             mode="mark-status"
                             session={session}
@@ -129,6 +129,10 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
                               </Button>
                             }
                           />
+                          <Badge variant="outline">
+                            <Calendar1 className="h-4 w-4 mr-1" />
+                            Scheduled
+                          </Badge>
                         </>
                       ) : null}
                       {session.cancelled && (
