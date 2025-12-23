@@ -40,6 +40,14 @@ export async function getClasses(
         columns: {
           id: true,
         },
+        with: {
+          student: {
+            columns: {
+              id: true,
+              name: true,
+            }
+          }
+        }
       },
       classSessions: {
         columns: {

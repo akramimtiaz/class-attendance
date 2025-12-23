@@ -48,18 +48,3 @@ export async function getStudents(
 export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
-
-export type StudentByClass = Awaited<ReturnType<typeof getStudentsByClass>>[number];
-
-export async function getStudentsByClass(classId: string) {
-  return db.query.classStudents.findMany({
-    where: eq(classStudents.classId, classId),
-    with: {
-      student: {
-        columns: {
-          name: true,
-        }
-      },
-    }
-  })
-};

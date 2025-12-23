@@ -4,9 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { SessionDialog } from "@/components/session-dialog";
 import {
-  Plus,
   Users,
   Clock,
   Calendar,
@@ -23,6 +21,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { ClassWithSessions } from "@/db/actions/classes";
 import day from 'dayjs';
+import { AttendanceDialog } from "./attendance-dialog";
 
 type ClassComponentProps = {
   classItem: ClassWithSessions;
@@ -120,12 +119,12 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
                       day(session.markedAt).isSame(day(), "day") ||
                       day(session.markedAt).isAfter(day(), "day") ? (
                         <>
-                          <SessionDialog
-                            mode="mark-status"
-                            session={session}
+                          <AttendanceDialog
+                            className={classItem.className}
+                            students={classItem.classStudents}
                             trigger={
                               <Button variant="outline" size="sm">
-                                Mark Status
+                                Mark Attendance
                               </Button>
                             }
                           />

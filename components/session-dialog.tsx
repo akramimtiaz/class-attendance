@@ -14,9 +14,10 @@ type SessionDialogProps = {
   trigger: React.ReactNode
   mode: "create" | "mark-status"
   session: ClassWithSessions['classSessions'][number];
+  students: ClassWithSessions['classStudents'];
 }
 
-export function SessionDialog({ trigger, mode, session }: SessionDialogProps) {
+export function SessionDialog({ trigger, mode, session, students }: SessionDialogProps) {
   const [open, setOpen] = useState(false)
 
   const title =
@@ -30,40 +31,6 @@ export function SessionDialog({ trigger, mode, session }: SessionDialogProps) {
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-          {mode === "create" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="session-date">Session Date</Label>
-                <Input id="session-date" type="date" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="session-time">Session Time</Label>
-                <Input id="session-time" type="time" />
-              </div>
-            </>
-          )}
-
-          {mode === "mark-status" && (
-            <>
-              <div className="space-y-2">
-                <Label>Session Date</Label>
-                <div className="text-sm text-muted-foreground">{session?.date}</div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select defaultValue={session?.status}>
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="holiday">Holiday</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
 
           <div className="flex justify-end gap-3 mt-4">
             <Button variant="outline" onClick={() => setOpen(false)}>

@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { ClassDialog } from "@/components/class-dialog";
-import { Plus } from "lucide-react";
 import ClassComponent from "@/components/class";
 import { getClasses, getTotalClassesCount } from "@/db/actions/classes";
 import Pagination from "@/components/pagination";
