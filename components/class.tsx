@@ -11,8 +11,6 @@ import {
   Clock,
   Calendar,
   CheckCircle,
-  XCircle,
-  CalendarX,
 } from "lucide-react";
 import {
   Collapsible,
@@ -21,11 +19,16 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { ClassWithSessions } from "@/db/actions/classes";
 
-export default function ClassComponent() {
-  const [openClasses, setOpenClasses] = useState<Record<number, boolean>>({});
+type ClassComponentProps = {
+  classItem: ClassWithSessions;
+}
 
-  const toggleClass = (classId: number) => {
+export default function ClassComponent({ classItem }: ClassComponentProps) {
+  const [openClasses, setOpenClasses] = useState<Record<string, boolean>>({});
+
+  const toggleClass = (classId: string) => {
     setOpenClasses((prev) => ({ ...prev, [classId]: !prev[classId] }));
   };
 
@@ -40,7 +43,7 @@ export default function ClassComponent() {
             <div className="flex items-center gap-4 flex-1 min-w-0">
               <Avatar className="h-12 w-12 shrink-0">
                 <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                  {classItem.name
+                  {classItem.className
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
@@ -48,20 +51,25 @@ export default function ClassComponent() {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-xl text-balance">
-                  {classItem.name}
+                  {classItem.className}
                 </CardTitle>
                 <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1.5">
                     <Users className="h-4 w-4" />
-                    {classItem.teacher}
+                    {classItem.assignedTeacher.name}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4" />
-                    {classItem.schedule}
+                    {classItem.dayOfWeek
+                      .split("")
+                      .map((l, idx) =>
+                        idx == 0 ? l.toUpperCase() : l.toLowerCase()
+                      )
+                      .join("")}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Users className="h-4 w-4" />
-                    {classItem.students} students
+                    {classItem.classStudents.length} Students
                   </div>
                 </div>
               </div>
@@ -96,7 +104,7 @@ export default function ClassComponent() {
                 />
               </div>
               <div className="space-y-2">
-                {classItem.sessions.map((session) => (
+                {classItem.classSessions.map((session) => (
                   <div
                     key={session.id}
                     className="flex items-center justify-between p-3 rounded-lg border bg-card"
@@ -104,26 +112,26 @@ export default function ClassComponent() {
                     <div className="flex items-center gap-4">
                       <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                       <div>
-                        <div className="font-medium">{session.date}</div>
-                        {session.status === "completed" && (
+                        <div className="font-medium">{session.sessionDate}</div>
+                        {/* {!!session.markedAt && (
                           <div className="text-sm text-muted-foreground mt-1">
                             Present: {session.present} • Absent:{" "}
                             {session.absent}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {session.status === "completed" && (
+                      {!!session.markedAt && (
                         <Badge variant="default" className="bg-accent">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Completed
                         </Badge>
                       )}
-                      {session.status === "scheduled" && (
+                      {!session.markedAt && (
                         <>
                           <Badge variant="secondary">Scheduled</Badge>
-                          <SessionDialog
+                          {/* <SessionDialog
                             mode="mark-status"
                             session={session}
                             trigger={
@@ -131,21 +139,21 @@ export default function ClassComponent() {
                                 Mark Status
                               </Button>
                             }
-                          />
+                          /> */}
                         </>
                       )}
-                      {session.status === "cancelled" && (
+                      {/* {session.isCancelled && (
                         <Badge variant="destructive">
                           <XCircle className="h-3 w-3 mr-1" />
                           Cancelled
                         </Badge>
-                      )}
-                      {session.status === "holiday" && (
+                      )} */}
+                      {/* {session.status === "holiday" && (
                         <Badge variant="outline">
                           <CalendarX className="h-3 w-3 mr-1" />
                           Holiday
                         </Badge>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 ))}
