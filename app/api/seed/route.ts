@@ -1,17 +1,11 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "@/db/schema";
-import { seed, reset } from "drizzle-seed";
+import { reset } from "drizzle-seed";
+import { seedData } from "@/db/seed-data";
+import day from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
 
-const classNames = [
-  "Beginner Quran",
-  "Intermediate Quran",
-  "Beginner Tajweed",
-  "Intermediate Tajweed",
-  "Islamic Studies 1",
-  "Islamic Studies 2",
-];
-
-const studentAges = [8, 9, 10, 11, 12, 13, 14, 15];
+day.extend(weekday);
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -25,59 +19,86 @@ const dbSchema = {
 };
 
 async function seedDb() {
-  await seed(db, dbSchema).refine(
-    (f) => ({
-      users: {
-        columns: {
-          name: f.fullName(),
-          role: f.default({ defaultValue: 'teacher' }),
-          isActive: f.default({ defaultValue: true }),
-          isDeleted: f.default({ defaultValue: false }),
-          deletedAt: f.default({ defaultValue: null }),
-          phoneNumber: f.phoneNumber(),
-        },
-        count: 10,
-      },
-      students: {
-        columns: {
-          name: f.fullName(),
-          isActive: f.default({ defaultValue: true }),
-          isDeleted: f.default({ defaultValue: false }),
-          deletedAt: f.default({ defaultValue: null }),
-          guardianContact: f.phoneNumber(),
-          age: f.valuesFromArray({ values: studentAges }),
-        },
-        count: 30,
-      },
-      classes: {
-        count: 5,
-        columns: {
-          className: f.valuesFromArray({ values: classNames, isUnique: true }),
-          dayOfWeek: f.default({ defaultValue: 'SUNDAY' }),
-          isActive: f.default({ defaultValue: true }),
-          isDeleted: f.default({ defaultValue: false }),
-          deletedAt: f.default({ defaultValue: null })
+  const admins = seedData.admins;
+  const teachers = seedData.teachers;
+
+  const [admin] = await db
+    .insert(schema.users)
+    .values(
+      admins.map((a) => ({
+        ...a,
+        role: schema.userRoleEnum.enumValues[0],
+        hashedPassword: "password",
+      }))
+    ).returning();
+
+  for (const teacher of teachers) {
+    const [insertedTeacher] = await db
+      .insert(schema.users)
+      .values({
+        ...teacher,
+        role: schema.userRoleEnum.enumValues[1],
+        hashedPassword: "password",
+      })
+      .returning();
+
+
+    for (const classItem of teacher.classes) {
+      const [insertedClass] = await db.insert(schema.classes).values({
+        className: classItem.className,
+        dayOfWeek: schema.dayOfWeekEnum.enumValues[6],
+        assignedTeacherId: insertedTeacher.id,
+      }).returning();
+
+      const insertedStudents = await db.insert(schema.students).values(
+        classItem.students.map((studentName) => ({
+          name: studentName,
+          age: Math.floor(Math.random() * (15 - 10 + 1)) + 10,
+          guradianName: 'Ahmed Rayyan',
+          guradianContact: '0400 000 000',
+        }))
+      ).returning();
+
+      await db.insert(schema.classStudents).values(
+        insertedStudents.map((student) => ({
+          classId: insertedClass.id,
+          studentId: student.id,
+          enrolledAt: day().subtract(2, 'month').toDate(),
+        }))
+      );
+
+      const sessionDates = [
+        day().weekday(-14),
+        day().weekday(-7),
+        day().weekday(7),
+      ];
+
+      const sessions = await db.insert(schema.classSessions).values(
+        sessionDates.map(sd => ({
+          classId: insertedClass.id,
+          teacherId: insertedTeacher.id,
+          sessionDate: day(sd).toDate().toString(),
+          createdBy: admin.id,
+          markedAt: day(sd).isAfter(day(), 'day') ? null : day(sd).toDate(),
+          markedBy: day(sd).isAfter(day(), 'day') ? null : insertedTeacher.id, 
+        }))
+      ).returning();
+
+      for (const session of sessions) {
+        if (session.markedAt) {
+          await db.insert(schema.studentAttendance).values(
+            insertedStudents.map((student) => ({
+              sessionId: session.id,
+              studentId: student.id,
+              attended: Math.random() < 0.5,
+              markedByUserId: insertedTeacher.id,
+              markedAt: day(session.markedAt).toDate(),
+             }))
+          )
         }
-      },
-      classStudents: {
-        count: 50,
-      },
-      classSessions: {
-        count: 50,
-        columns: {
-          cancelled: f.default({ defaultValue: false }),
-          cancelReason: f.default({ defaultValue: null }),
-          sessionDate: f.date({
-            minDate: new Date('2025-11-11'),
-            maxDate: new Date('2026-02-02'),
-          }),
-        }
-      },
-      studentAttendance: {
-        count: 50,
       }
-    })
-  );
+    }
+  }
 }
 
 export async function GET() {

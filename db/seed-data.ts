@@ -13,7 +13,6 @@ export const seedData = {
         {
             name: 'Imtiyas Idris',
             email: 'imtiaz@alma.org',
-            role: 'admin',
             phoneNumber: '0400 000 00',
         }
     ],
@@ -21,8 +20,7 @@ export const seedData = {
         {
             name: 'Yusuf Khan',
             email: 'yusuf@alma.org',
-            role: 'teacher',
-            phoneNumber: '0400 000 00',
+            phoneNumber: '0400 000 000',
             classes: [
                 {
                     className: 'Beginner Quran',
@@ -47,8 +45,7 @@ export const seedData = {
         {
             name: 'Ahmed Ali',
             email: 'ahmed@alma.org',
-            role: 'teacher',
-            phoneNumber: '0400 000 00',
+            phoneNumber: '0400 000 000',
             classes: [
                 {
                     className: 'Advanced Memorization',
