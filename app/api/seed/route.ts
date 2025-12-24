@@ -54,8 +54,8 @@ async function seedDb() {
         classItem.students.map((studentName) => ({
           name: studentName,
           age: Math.floor(Math.random() * (15 - 10 + 1)) + 10,
-          guradianName: 'Ahmed Rayyan',
-          guradianContact: '0400 000 000',
+          guardianName: 'Ahmed Rayyan',
+          guardianContact: '0400 000 000',
         }))
       ).returning();
 
@@ -77,7 +77,7 @@ async function seedDb() {
         sessionDates.map(sd => ({
           classId: insertedClass.id,
           teacherId: insertedTeacher.id,
-          sessionDate: day(sd).toDate().toString(),
+          sessionDate: day(sd).format('YYYY-MM-DD'),
           createdBy: admin.id,
           markedAt: day(sd).isAfter(day(), 'day') ? null : day(sd).toDate(),
           markedBy: day(sd).isAfter(day(), 'day') ? null : insertedTeacher.id, 
