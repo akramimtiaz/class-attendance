@@ -89,7 +89,7 @@ export function StudentDialog({
                 <Input
                   id="age"
                   name="age"
-                  defaultValue={Number(student?.age)}
+                  defaultValue={student?.age ?? ""}
                   type="number"
                   step={1}
                   placeholder="Enter student age"
