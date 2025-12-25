@@ -84,6 +84,8 @@ export async function createOrUpdateTeacher(
   _prevState: TeacherFormState,
   formData: FormData
 ) {
+  console.log(formData);
+
   const validatedFields = CreateOrUpdateTeacherSchema.safeParse({
     id: formData.get("id") || undefined,
     name: formData.get("name"),
@@ -97,7 +99,7 @@ export async function createOrUpdateTeacher(
       message: "Missing Fields. Failed to save teacher.",
     };
   }
-
+  console.log('validatedFields', validatedFields.data);
   try {
     await createOrUpdateTeacherInDb(validatedFields.data);
   } catch (e) {

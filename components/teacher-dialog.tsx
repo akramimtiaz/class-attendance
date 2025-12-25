@@ -83,7 +83,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                   type="email"
                   placeholder="teacher@example.com"
                   defaultValue={teacher?.email}
-                  disabled={!isNewTeacher}
+                  readOnly={!isNewTeacher}
                 />
               </div>
               <div className="space-y-2">
