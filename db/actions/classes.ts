@@ -21,6 +21,20 @@ export async function getClassesByTeacher(teacherId: string) {
     );
 }
 
+export type ClassForAssignment = Awaited<
+  ReturnType<typeof getClassesAvailableForAssignment>
+>[number];
+
+export async function getClassesAvailableForAssignment() {
+  return db.query.classes.findMany({
+   where: eq(classes.isDeleted, false), 
+   columns: {
+      id: true,
+      className: true,
+   },
+  });
+}
+
 export type ClassWithSessions = Awaited<ReturnType<typeof getClasses>>[number];
 
 export async function getClasses(

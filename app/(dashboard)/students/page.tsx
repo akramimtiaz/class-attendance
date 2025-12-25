@@ -5,7 +5,8 @@ import Pagination from "@/components/pagination"
 import Student from "@/components/student"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { StudentDialog } from "@/components/student-dialog"
+import { CreateStudentDialog } from "@/components/create-student-dialog"
+import { getClassesAvailableForAssignment } from "@/db/actions/classes"
 
 export default async function StudentsPage(props: {
   searchParams: { page?: string };
@@ -14,6 +15,7 @@ export default async function StudentsPage(props: {
   const currentPage = Number(params?.page) || 1;
   const students = await getStudents(false, currentPage);
   const studentCount = await getTotalStudentCount();
+  const availableClasses = await getClassesAvailableForAssignment();
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -34,7 +36,8 @@ export default async function StudentsPage(props: {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search students..." className="pl-9" />
             </div> */}
-            <StudentDialog
+            <CreateStudentDialog
+              availableClasses={availableClasses}
               trigger={
                 <Button variant={"outline"} style={{ cursor: 'pointer'}}>
                   <Plus className="h-4 w-4 mr-2" />
