@@ -79,27 +79,14 @@ export async function createOrUpdateStudentWithClasses(input: {
       throw new Error("Failed to create student");
     }
 
-    if (studentId && !assignedClasses?.length) {
+    if (studentId) {
       await tx
         .delete(classStudents)
         .where(eq(classStudents.studentId, insertedStudent.id));
-      return;
     }
 
-    const studentCurrentClasses = await tx
-      .select({ classId: classStudents.classId })
-      .from(classStudents)
-      .where(eq(classStudents.studentId, insertedStudent.id));
-
-    const existingClassIds = studentCurrentClasses.map((c) => c.classId);
-    const studentUpdatedClasses = assignedClasses.filter(
-      (classId) => !existingClassIds.includes(classId)
-    );
-
-    if (!studentUpdatedClasses?.length) return;
-
     await tx.insert(classStudents).values(
-       studentUpdatedClasses.map((classId) => ({
+       assignedClasses.map((classId) => ({
         classId,
         studentId: insertedStudent.id,
       }))

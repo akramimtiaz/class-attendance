@@ -40,7 +40,6 @@ export async function createOrUpdateStudent(_prevState: State, formData: FormDat
     guardianContact: formData.get("guardianContact"),
     assignedClasses: formData.getAll("assignedClasses"),
   });
-
   
   if (!validatedFields.success) {
       console.log('formData:', formData.getAll('assignedClasses'));
