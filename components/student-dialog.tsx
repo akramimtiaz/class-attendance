@@ -19,37 +19,35 @@ import { Switch } from "@/components/ui/switch";
 
 type StudentDialogProps = {
   trigger: React.ReactNode;
-  defaultMode:  "create" | "edit" | "view";
-  student: StudentWithClasses;
+  student?: StudentWithClasses;
 };
 
 export function StudentDialog({
   trigger,
-  defaultMode,
   student,
 }: StudentDialogProps) {
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<StudentDialogProps['defaultMode']>(defaultMode);
+  const [mode, setMode] = useState<'view' | 'edit'>('view');
 
   const toggleEditMode = () => {
     setMode((prev) => (prev === "view" ? "edit" : "view"));
   };
 
   const isReadOnly = mode === "view";
-  const title =
-    mode === "create"
-      ? "Add New Student"
-      : "Student Details";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>Student Details</DialogTitle>
           <div className="flex items-center space-x-2 mt-2">
             <Label>Edit</Label>
-            <Switch checked={mode === 'edit'} value={mode} onCheckedChange={toggleEditMode} />
+            <Switch
+              checked={mode === "edit"}
+              value={mode}
+              onCheckedChange={toggleEditMode}
+            />
           </div>
         </DialogHeader>
         <div className="grid gap-6 py-4">
@@ -101,9 +99,7 @@ export function StudentDialog({
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setOpen(false)}>
-                {mode === "create" ? "Add Student" : "Save Changes"}
-              </Button>
+              <Button onClick={() => setOpen(false)}>Save Changes</Button>
             </div>
           )}
 

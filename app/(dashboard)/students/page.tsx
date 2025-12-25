@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getStudents, getTotalStudentCount } from "@/db/actions/students"
 import Pagination from "@/components/pagination"
 import Student from "@/components/student"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
+import { StudentDialog } from "@/components/student-dialog"
 
 export default async function StudentsPage(props: {
   searchParams: { page?: string };
@@ -31,6 +34,14 @@ export default async function StudentsPage(props: {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search students..." className="pl-9" />
             </div> */}
+            <StudentDialog
+              trigger={
+                <Button variant={"outline"} style={{ cursor: 'pointer'}}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Student
+                </Button>
+              }
+            />
           </div>
         </CardHeader>
         <Suspense fallback={<h1>Loading...</h1>}>
