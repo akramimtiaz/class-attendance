@@ -19,7 +19,9 @@ export async function getStudentById(id: string) {
   });
 }
 
-export type StudentWithClasses = Awaited<ReturnType<typeof getStudents>>[number];
+export type StudentWithClasses = Awaited<
+  ReturnType<typeof getStudents>
+>[number];
 
 export async function getStudents(
   includeAttendance: boolean = false,
@@ -49,24 +51,24 @@ export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
 
-export async function createOrUpdateStudentWithClasses(
-  input: {
-    id?: string;
-    name: string;
-    age: number;
-    guardianName: string;
-    guardianContact: string;
-    assignedClasses: string[];
-  }
-) {
+export async function createOrUpdateStudentWithClasses(input: {
+  id?: string;
+  name: string;
+  age: number;
+  guardianName: string;
+  guardianContact: string;
+  assignedClasses: string[];
+}) {
   return db.transaction(async (tx) => {
     const { assignedClasses, id: studentId, ...student } = input;
     let insertedStudent: Student;
 
     if (studentId) {
-    const [result] = await tx.update(students)
-      .set(student)
-      .where(eq(students.id, studentId)).returning();
+      const [result] = await tx
+        .update(students)
+        .set(student)
+        .where(eq(students.id, studentId))
+        .returning();
       insertedStudent = result;
     } else {
       const [result] = await tx.insert(students).values(student).returning();
@@ -77,13 +79,30 @@ export async function createOrUpdateStudentWithClasses(
       throw new Error("Failed to create student");
     }
 
-    if (assignedClasses?.length > 0) {
-      await tx.insert(classStudents).values(
-        input.assignedClasses.map((classId) => ({
-          classId,
-          studentId: insertedStudent.id,
-        }))
-      );
+    if (studentId && !assignedClasses?.length) {
+      await tx
+        .delete(classStudents)
+        .where(eq(classStudents.studentId, insertedStudent.id));
+      return;
     }
+
+    const studentCurrentClasses = await tx
+      .select({ classId: classStudents.classId })
+      .from(classStudents)
+      .where(eq(classStudents.studentId, insertedStudent.id));
+
+    const existingClassIds = studentCurrentClasses.map((c) => c.classId);
+    const studentUpdatedClasses = assignedClasses.filter(
+      (classId) => !existingClassIds.includes(classId)
+    );
+
+    if (!studentUpdatedClasses?.length) return;
+
+    await tx.insert(classStudents).values(
+       studentUpdatedClasses.map((classId) => ({
+        classId,
+        studentId: insertedStudent.id,
+      }))
+    );
   });
 }
