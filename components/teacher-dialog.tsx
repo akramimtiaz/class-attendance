@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useActionState, useRef, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,91 +10,133 @@ import { Label } from "@/components/ui/label"
 import type { TeacherWithClasses } from "@/db/actions/users"
 import { Switch } from "@/components/ui/switch";
 import { Badge } from '@/components/ui/badge'; 
+import { createOrUpdateTeacher, type TeacherFormState } from "@/lib/actions"
+import { ClassForAssignment } from "@/db/actions/classes"
 
 type TeacherDialogProps = {
   trigger: React.ReactNode
-  defaultMode: "create" | "edit" | "view"
-  teacher: TeacherWithClasses
+  teacher?: TeacherWithClasses
+  availableClasses: ClassForAssignment[];
 }
 
-export function TeacherDialog({ trigger, defaultMode, teacher }: TeacherDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<TeacherDialogProps['defaultMode']>(defaultMode);
+export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const isNewTeacher = !teacher;
 
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<'view' | 'edit'>('view');
+
+  const initialState = { message: null, errors: {} } as TeacherFormState;
+  const [state, formAction] = useActionState(createOrUpdateTeacher, initialState);
+
+  const isReadOnly = mode === "view" && !isNewTeacher;
   const toggleEditMode = () => {
     setMode((prev) => (prev === "view" ? "edit" : "view"));
   };
-
-  const isReadOnly = mode === "view";
-  const title =
-    mode === "create"
-      ? "Add New Teacher"
-      : "Teacher Details";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <div className="flex items-center space-x-2 mt-2">
-            <Label>Edit</Label>
-            <Switch checked={mode === 'edit'} value={mode} onCheckedChange={toggleEditMode} />
-          </div>
-        </DialogHeader>
-        <div className="grid gap-6 py-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 col-span-2">
-              <Label htmlFor="name">Teacher Name</Label>
-              <Input id="name" placeholder="Enter teacher name" defaultValue={teacher?.name} disabled={isReadOnly} />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="teacher@example.com"
-                defaultValue={teacher?.email}
-                disabled={isReadOnly}
+          <DialogTitle>Teacher Details</DialogTitle>
+          {!isNewTeacher && (
+            <div className="flex items-center space-x-2 mt-2">
+              <Label>Edit</Label>
+              <Switch
+                checked={mode === "edit"}
+                value={mode}
+                onCheckedChange={toggleEditMode}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="+1 (555) 000-0000" defaultValue={teacher?.phoneNumber ?? ''} disabled={isReadOnly} />
+          )}
+        </DialogHeader>
+        <form ref={formRef} action={formAction}>
+          <div className="grid gap-6 py-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 col-span-2">
+                <Label htmlFor="name">Teacher Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  defaultValue={teacher?.name ?? ""}
+                  placeholder="Enter teacher name"
+                  disabled={isReadOnly}
+                  aria-describedby="name-error"
+                />
+                <div id="name-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.name &&
+                    state.errors.name.map((error: string) => (
+                      <p className="mt-2 text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
             </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="teacher@example.com"
+                  defaultValue={teacher?.email}
+                  disabled={!isNewTeacher}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="0400 000 000"
+                  defaultValue={teacher?.phoneNumber ?? ""}
+                  disabled={isReadOnly}
+                />
+                <div id="age-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.phoneNumber &&
+                    state.errors.phoneNumber.map((error: string) => (
+                      <p className="mt-2 text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="font-semibold text-sm">Assigned Classes</div>
+            {teacher?.classesAssigned.map((c) => (
+              <div key={c.className} className="flex flex-row gap-2">
+                <Badge>{c.className}</Badge>
+              </div>
+            ))}
+            {!teacher?.classesAssigned?.length && (
+              <Badge variant={"secondary"}>Not Assigned</Badge>
+            )}
+
+            {!isReadOnly && (
+              <div className="flex justify-end gap-3 mt-4">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => setOpen(false)}>
+                  Save Changes
+                </Button>
+              </div>
+            )}
+
+            {isReadOnly && (
+              <div className="flex justify-end gap-3 mt-4">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            )}
           </div>
-
-          <div className="font-semibold text-sm">Assigned Classes</div>
-          {teacher?.classesAssigned.map((c) => (
-            <div key={c.className} className="flex flex-row gap-2">
-              <Badge>{c.className}</Badge>
-            </div>
-          ))}
-          {!teacher?.classesAssigned?.length && (
-            <Badge variant={"secondary"}>Not Assigned</Badge>
-          )}
-
-          {!isReadOnly && (
-            <div className="flex justify-end gap-3 mt-4">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setOpen(false)}>{mode === "create" ? "Add Teacher" : "Save Changes"}</Button>
-            </div>
-          )}
-
-          {isReadOnly && (
-            <div className="flex justify-end gap-3 mt-4">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Close
-              </Button>
-            </div>
-          )}
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

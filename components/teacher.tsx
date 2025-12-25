@@ -86,7 +86,6 @@ export default function Teacher({ teacher }: TeacherProps) {
 
         <div className="">
           <TeacherDialog
-            defaultMode="view"
             teacher={teacher}
             trigger={
               <Button variant="outline" size="sm">

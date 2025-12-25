@@ -3,8 +3,9 @@ import z from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
+import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
 
-export type State = {
+export type StudentFormState = {
   errors?: {
     name?: string[];
     age?: string[];
@@ -61,3 +62,53 @@ export async function createOrUpdateStudent(_prevState: State, formData: FormDat
   revalidatePath("/students");
   redirect("/students");
 }
+
+export type TeacherFormState = {
+  errors?: {
+    id?: string[];
+    name?: string[];
+    email?: string[];
+    phoneNumber?: string[];
+  };
+  message?: string | null;
+};
+
+export const CreateOrUpdateTeacherSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  email: z.email(),
+  phoneNumber: z.string().min(1, "Phone number is required"),
+});
+
+export async function createOrUpdateTeacher(
+  _prevState: State,
+  formData: FormData
+) {
+  const validatedFields = CreateOrUpdateTeacherSchema.safeParse({
+    id: formData.get("id") || undefined,
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phoneNumber: formData.get("phoneNumber"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to save teacher.",
+    };
+  }
+
+  try {
+    await createOrUpdateTeacherInDb(validatedFields.data);
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to save teacher.",
+    };
+  }
+
+  revalidatePath("/teachers");
+  redirect("/teachers");
+}
+
+

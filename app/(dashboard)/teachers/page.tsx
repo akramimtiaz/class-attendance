@@ -1,7 +1,11 @@
 import Pagination from "@/components/pagination";
 import Teacher from "@/components/teacher";
+import { TeacherDialog } from "@/components/teacher-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getClassesAvailableForAssignment } from "@/db/actions/classes";
 import { getTeachers, getTotalTeachersCount } from "@/db/actions/users";
+import { Plus } from "lucide-react";
 import { Suspense } from "react";
 
 export default async function TeachersPage(props: {
@@ -11,6 +15,7 @@ export default async function TeachersPage(props: {
   const currentPage = Number(params?.page) || 1;
   const teachers = await getTeachers(currentPage);
   const teachersCount = await getTotalTeachersCount();
+  const availableClasses = await getClassesAvailableForAssignment();
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -27,10 +32,15 @@ export default async function TeachersPage(props: {
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <CardTitle>All Teachers ({teachersCount})</CardTitle>
-            {/* <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search teachers..." className="pl-9" />
-            </div> */}
+            <TeacherDialog
+              availableClasses={availableClasses}
+              trigger={
+                <Button variant={"outline"} style={{ cursor: 'pointer'}}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Student
+                </Button>
+              }
+            />
           </div>
         </CardHeader>
         <Suspense fallback={<h1>Loading...</h1>}>
