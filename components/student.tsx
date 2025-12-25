@@ -6,12 +6,14 @@ import { StudentDialog } from "@/components/student-dialog";
 import { Eye } from "lucide-react";
 import { Badge } from "./ui/badge";
 import type { StudentWithClasses } from "@/db/actions/students";
+import type { ClassForAssignment } from "@/db/actions/classes";
 
 type StudentProps = {
   student: StudentWithClasses;
+  availableClasses: ClassForAssignment[];
 };
 
-export default function Student({ student }: StudentProps) {
+export default function Student({ student, availableClasses }: StudentProps) {
   return (
     <div
       key={student.id}
@@ -44,8 +46,8 @@ export default function Student({ student }: StudentProps) {
         </div>
         <div className="flex gap-2">
           <StudentDialog
-            defaultMode="view"
             student={student}
+            availableClasses={availableClasses}
             trigger={
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4" />

@@ -51,7 +51,7 @@ export default async function StudentsPage(props: {
           <CardContent>
             <div className="space-y-2">
               {students.map((student) => (
-                <Student key={student.id} student={student} />
+                <Student key={student.id} student={student} availableClasses={availableClasses} />
               ))}
             </div>
             <div className="pt-4">
