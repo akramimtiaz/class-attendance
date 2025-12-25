@@ -34,7 +34,7 @@ export default async function TeachersPage(props: {
               trigger={
                 <Button variant={"outline"} style={{ cursor: 'pointer'}}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Student
+                  Add Teacher
                 </Button>
               }
             />

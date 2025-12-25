@@ -11,7 +11,6 @@ import type { TeacherWithClasses } from "@/db/actions/users"
 import { Switch } from "@/components/ui/switch";
 import { Badge } from '@/components/ui/badge'; 
 import { createOrUpdateTeacher, type TeacherFormState } from "@/lib/actions"
-import { ClassForAssignment } from "@/db/actions/classes"
 
 type TeacherDialogProps = {
   trigger: React.ReactNode
@@ -53,6 +52,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
         <form ref={formRef} action={formAction}>
           <div className="grid gap-6 py-4">
             <div className="grid gap-4 md:grid-cols-2">
+              <Input id="id" type="hidden" name="id" defaultValue={teacher?.id} />
               <div className="space-y-2 col-span-2">
                 <Label htmlFor="name">Teacher Name</Label>
                 <Input
@@ -79,6 +79,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="teacher@example.com"
                   defaultValue={teacher?.email}

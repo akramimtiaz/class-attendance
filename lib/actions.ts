@@ -32,7 +32,7 @@ const CreateOrUpdateStudentSchema = z.object({
     .min(1, "At least one class must be selected"),
 });
 
-export async function createOrUpdateStudent(_prevState: State, formData: FormData) {
+export async function createOrUpdateStudent(_prevState: StudentFormState, formData: FormData) {
   const validatedFields = CreateOrUpdateStudentSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -73,7 +73,7 @@ export type TeacherFormState = {
   message?: string | null;
 };
 
-export const CreateOrUpdateTeacherSchema = z.object({
+const CreateOrUpdateTeacherSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Name is required"),
   email: z.email(),
@@ -81,7 +81,7 @@ export const CreateOrUpdateTeacherSchema = z.object({
 });
 
 export async function createOrUpdateTeacher(
-  _prevState: State,
+  _prevState: TeacherFormState,
   formData: FormData
 ) {
   const validatedFields = CreateOrUpdateTeacherSchema.safeParse({

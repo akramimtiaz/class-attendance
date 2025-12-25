@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { type StudentWithClasses } from "@/db/actions/students";
 import { Switch } from "@/components/ui/switch";
 import type { ClassForAssignment } from "@/db/actions/classes";
-import { createOrUpdateStudent, State } from "@/lib/actions";
+import { createOrUpdateStudent, StudentFormState } from "@/lib/actions";
 import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -36,7 +36,7 @@ export function StudentDialog({
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
-  const initialState = { message: null, errors: {} } as State;
+  const initialState = { message: null, errors: {} } as StudentFormState;
   const [state, formAction] = useActionState(createOrUpdateStudent, initialState);
 
   const isReadOnly = mode === "view" && !isNewStudent;
