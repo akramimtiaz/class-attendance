@@ -48,3 +48,38 @@ export async function getStudents(
 export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
+
+export async function createStudentWithClasses(
+  input: {
+    name: string;
+    age: number;
+    guardianName: string;
+    guardianContact: string;
+    assignedClasses: string[];
+  }
+) {
+  return db.transaction(async (tx) => {
+    const [student] = await tx
+      .insert(students)
+      .values({
+        name: input.name,
+        age: input.age,
+        guardianName: input.guardianName,
+        guardianContact: input.guardianContact,
+      })
+      .returning({ id: students.id });
+
+    if (!student) {
+      throw new Error("Failed to create student");
+    }
+
+    if (input.assignedClasses?.length > 0) {
+      await tx.insert(classStudents).values(
+        input.assignedClasses.map((classId) => ({
+          classId,
+          studentId: student.id,
+        }))
+      );
+    }
+  });
+}
