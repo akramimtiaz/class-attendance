@@ -161,7 +161,7 @@ export function StudentDialog({
                   key={option.id}
                 >
                   <Checkbox
-                    checked={student?.classStudents.some(
+                    defaultChecked={student?.classStudents.some(
                       (cs) => cs.classId === option.id
                     )}
                     name="assignedClasses"
