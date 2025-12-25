@@ -52,7 +52,12 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
         <form ref={formRef} action={formAction}>
           <div className="grid gap-6 py-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <Input id="id" type="hidden" name="id" defaultValue={teacher?.id} />
+              <Input
+                id="id"
+                type="hidden"
+                name="id"
+                defaultValue={teacher?.id}
+              />
               <div className="space-y-2 col-span-2">
                 <Label htmlFor="name">Teacher Name</Label>
                 <Input
@@ -84,7 +89,16 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                   placeholder="teacher@example.com"
                   defaultValue={teacher?.email}
                   readOnly={!isNewTeacher}
+                  aria-describedby="email-error"
                 />
+                <div id="email-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.email &&
+                    state.errors.email.map((error: string) => (
+                      <p className="mt-2 text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber">Phone Number</Label>
@@ -94,8 +108,9 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                   placeholder="0400 000 000"
                   defaultValue={teacher?.phoneNumber ?? ""}
                   disabled={isReadOnly}
+                  aria-describedby="phoneNumber-error"
                 />
-                <div id="age-error" aria-live="polite" aria-atomic="true">
+                <div id="phoneNumber-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.phoneNumber &&
                     state.errors.phoneNumber.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
