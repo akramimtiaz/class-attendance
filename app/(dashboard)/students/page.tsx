@@ -5,7 +5,7 @@ import Pagination from "@/components/pagination"
 import Student from "@/components/student"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { CreateStudentDialog } from "@/components/create-student-dialog"
+import { StudentDialog } from "@/components/student-dialog"
 import { getClassesAvailableForAssignment } from "@/db/actions/classes"
 
 export default async function StudentsPage(props: {
@@ -36,7 +36,7 @@ export default async function StudentsPage(props: {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search students..." className="pl-9" />
             </div> */}
-            <CreateStudentDialog
+            <StudentDialog
               availableClasses={availableClasses}
               trigger={
                 <Button variant={"outline"} style={{ cursor: 'pointer'}}>

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { createStudent, State } from "@/lib/actions";
+import { createOrUpdateStudent, State } from "@/lib/actions";
 import type { ClassForAssignment } from "@/db/actions/classes";
 
 type CreateStudentDialogProps = {
@@ -29,7 +29,7 @@ export function CreateStudentDialog({
   const [open, setOpen] = useState(false);
 
   const initialState = { message: null, errors: {} } as State;
-  const [state, formAction] = useActionState(createStudent, initialState);
+  const [state, formAction] = useActionState(createOrUpdateStudent, initialState);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -2,7 +2,7 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createStudentWithClasses } from "@/db/actions/students";
+import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 
 export type State = {
   errors?: {
@@ -15,7 +15,8 @@ export type State = {
   message?: string | null;
 };
 
-const CreateStudentSchema = z.object({
+const CreateOrUpdateStudentSchema = z.object({
+  id: z.string(),
   name: z
     .string()
     .min(1, "Customer name is required"),
@@ -30,8 +31,9 @@ const CreateStudentSchema = z.object({
     .min(1, "At least one class must be selected"),
 });
 
-export async function createStudent(_prevState: State, formData: FormData) {
-  const validatedFields = CreateStudentSchema.safeParse({
+export async function createOrUpdateStudent(_prevState: State, formData: FormData) {
+  const validatedFields = CreateOrUpdateStudentSchema.safeParse({
+    id: formData.get("id"),
     name: formData.get("name"),
     age: formData.get("age"),
     guardianName: formData.get("guardianName"),
@@ -49,8 +51,7 @@ export async function createStudent(_prevState: State, formData: FormData) {
   }
 
   try {
-    // comment out
-    createStudentWithClasses(validatedFields.data);
+    createOrUpdateStudentWithClasses(validatedFields.data);
   } catch (e) {
     console.error(e);
     return {

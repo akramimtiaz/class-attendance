@@ -3,7 +3,7 @@
 import { desc, eq } from "drizzle-orm";
 // import { revalidatePath } from "next/cache";
 import { db } from "@/db/drizzle";
-import { classStudents, students } from "@/db/schema";
+import { classStudents, Student, students } from "@/db/schema";
 import { itemsPerPage } from "@/lib/constants";
 
 export async function getStudentById(id: string) {
@@ -49,8 +49,9 @@ export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
 
-export async function createStudentWithClasses(
+export async function createOrUpdateStudentWithClasses(
   input: {
+    id?: string;
     name: string;
     age: number;
     guardianName: string;
@@ -59,25 +60,28 @@ export async function createStudentWithClasses(
   }
 ) {
   return db.transaction(async (tx) => {
-    const [student] = await tx
-      .insert(students)
-      .values({
-        name: input.name,
-        age: input.age,
-        guardianName: input.guardianName,
-        guardianContact: input.guardianContact,
-      })
-      .returning({ id: students.id });
+    const { assignedClasses, id: studentId, ...student } = input;
+    let insertedStudent: Student;
 
-    if (!student) {
+    if (studentId) {
+    const [result] = await tx.update(students)
+      .set(student)
+      .where(eq(students.id, studentId)).returning();
+      insertedStudent = result;
+    } else {
+      const [result] = await tx.insert(students).values(student).returning();
+      insertedStudent = result;
+    }
+
+    if (!insertedStudent) {
       throw new Error("Failed to create student");
     }
 
-    if (input.assignedClasses?.length > 0) {
+    if (assignedClasses?.length > 0) {
       await tx.insert(classStudents).values(
         input.assignedClasses.map((classId) => ({
           classId,
-          studentId: student.id,
+          studentId: insertedStudent.id,
         }))
       );
     }
