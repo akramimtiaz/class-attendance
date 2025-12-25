@@ -16,7 +16,6 @@ import { ClassForAssignment } from "@/db/actions/classes"
 type TeacherDialogProps = {
   trigger: React.ReactNode
   teacher?: TeacherWithClasses
-  availableClasses: ClassForAssignment[];
 }
 
 export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
@@ -106,14 +105,18 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
               </div>
             </div>
 
-            <div className="font-semibold text-sm">Assigned Classes</div>
-            {teacher?.classesAssigned.map((c) => (
-              <div key={c.className} className="flex flex-row gap-2">
-                <Badge>{c.className}</Badge>
+            {!isNewTeacher && (
+              <div>
+                <div className="font-semibold text-sm">Assigned Classes</div>
+                {teacher?.classesAssigned.map((c) => (
+                  <div key={c.className} className="flex flex-row gap-2">
+                    <Badge>{c.className}</Badge>
+                  </div>
+                ))}
+                {!teacher?.classesAssigned?.length && (
+                  <Badge variant={"secondary"}>Not Assigned</Badge>
+                )}
               </div>
-            ))}
-            {!teacher?.classesAssigned?.length && (
-              <Badge variant={"secondary"}>Not Assigned</Badge>
             )}
 
             {!isReadOnly && (
@@ -121,9 +124,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => setOpen(false)}>
-                  Save Changes
-                </Button>
+                <Button onClick={() => setOpen(false)}>Save Changes</Button>
               </div>
             )}
 
