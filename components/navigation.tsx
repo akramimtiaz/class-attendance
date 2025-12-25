@@ -14,7 +14,6 @@ const navigationItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
-  console.log(pathname)
 
   return (
     <nav className="border-b bg-card">

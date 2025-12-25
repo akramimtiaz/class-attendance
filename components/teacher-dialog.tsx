@@ -140,7 +140,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => setOpen(false)}>Save Changes</Button>
+                <Button type="submit">Save Changes</Button>
               </div>
             )}
 

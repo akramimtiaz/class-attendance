@@ -43,7 +43,6 @@ export async function createOrUpdateStudent(_prevState: StudentFormState, formDa
   });
   
   if (!validatedFields.success) {
-      console.log('formData:', formData.getAll('assignedClasses'));
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to add student.",
@@ -76,7 +75,7 @@ export type TeacherFormState = {
 const CreateOrUpdateTeacherSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Name is required"),
-  email: z.email(),
+  email: z.email({ message: 'Email is required' }),
   phoneNumber: z.string().min(1, "Phone number is required"),
 });
 
@@ -84,8 +83,6 @@ export async function createOrUpdateTeacher(
   _prevState: TeacherFormState,
   formData: FormData
 ) {
-  console.log(formData);
-
   const validatedFields = CreateOrUpdateTeacherSchema.safeParse({
     id: formData.get("id") || undefined,
     name: formData.get("name"),
@@ -99,7 +96,7 @@ export async function createOrUpdateTeacher(
       message: "Missing Fields. Failed to save teacher.",
     };
   }
-  console.log('validatedFields', validatedFields.data);
+
   try {
     await createOrUpdateTeacherInDb(validatedFields.data);
   } catch (e) {
