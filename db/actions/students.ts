@@ -51,6 +51,10 @@ export async function getTotalStudentCount() {
   return db.$count(students, eq(students.isDeleted, false));
 }
 
+export async function getTotalActiveStudentsCount() {
+  return db.$count(students, eq(students.isDeleted, false));
+}
+
 export async function createOrUpdateStudentWithClasses(input: {
   id?: string;
   name: string;

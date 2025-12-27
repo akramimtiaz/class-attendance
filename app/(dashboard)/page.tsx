@@ -5,8 +5,19 @@ import {
   CheckCircle,
   BookOpen,
 } from "lucide-react";
+import { getTotalActiveStudentsCount } from "@/db/actions/students";
+import { getTotalActiveTeachersCount } from "@/db/actions/users";
+import { getActiveClassesCount } from "@/db/actions/classes";
+import { getAverageAttendanceLast30Days } from "@/db/actions/student-attendance";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [totalStudents, totalTeachers, activeClasses, avgAttendance] = await Promise.all([
+    getTotalActiveStudentsCount(),
+    getTotalActiveTeachersCount(),
+    getActiveClassesCount(),
+    getAverageAttendanceLast30Days(),
+  ]);
+
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -26,7 +37,7 @@ export default function DashboardPage() {
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">57</div>
+            <div className="text-2xl font-bold">{totalStudents}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Across all classes
             </p>
@@ -41,7 +52,7 @@ export default function DashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold">{totalTeachers}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Active instructors
             </p>
@@ -56,7 +67,7 @@ export default function DashboardPage() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4</div>
+            <div className="text-2xl font-bold">{activeClasses}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Running this term
             </p>
@@ -71,7 +82,7 @@ export default function DashboardPage() {
             <CheckCircle className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">89%</div>
+            <div className="text-2xl font-bold">{avgAttendance}%</div>
             <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
           </CardContent>
         </Card>

@@ -85,6 +85,13 @@ export async function getTotalClassesCount() {
   return db.$count(classes, eq(classes.isDeleted, false));
 }
 
+export async function getActiveClassesCount() {
+  return db.$count(
+    classes,
+    and(eq(classes.isActive, true), eq(classes.isDeleted, false))
+  );
+}
+
 export async function createOrUpdateClass(input: {
   id?: string;
   className: string;

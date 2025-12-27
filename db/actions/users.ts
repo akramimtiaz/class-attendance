@@ -55,6 +55,13 @@ export async function getTotalTeachersCount() {
   );
 }
 
+export async function getTotalActiveTeachersCount() {
+  return db.$count(
+    users,
+    and(eq(users.role, "teacher"), eq(users.isDeleted, false))
+  );
+}
+
 export type TeacherForAssignment = Awaited<
   ReturnType<typeof getTeachersForAssignment>
 >[number];
