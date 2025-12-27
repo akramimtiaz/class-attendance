@@ -37,3 +37,37 @@ export async function createClassSession(input: {
 
   return result;
 }
+
+export async function updateClassSession(input: {
+  id: string;
+  teacherId: string;
+  sessionDate: string;
+}) {
+  const [result] = await db
+    .update(classSessions)
+    .set({
+      teacherId: input.teacherId,
+      sessionDate: input.sessionDate,
+    })
+    .where(eq(classSessions.id, input.id))
+    .returning();
+
+  if (!result) {
+    throw new Error("Failed to update class session");
+  }
+
+  return result;
+}
+
+export async function deleteClassSession(sessionId: string) {
+  const [result] = await db
+    .delete(classSessions)
+    .where(eq(classSessions.id, sessionId))
+    .returning();
+
+  if (!result) {
+    throw new Error("Failed to delete class session");
+  }
+
+  return result;
+}

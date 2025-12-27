@@ -13,6 +13,7 @@ import {
   Calendar1,
   Eye,
   Plus,
+  Pencil,
 } from "lucide-react";
 import {
   Collapsible,
@@ -26,6 +27,7 @@ import day from 'dayjs';
 import { AttendanceDialog } from "./attendance-dialog";
 import { ClassDialog } from "./class-dialog";
 import { ClassSessionDialog } from "./class-session-dialog";
+import { EditSessionDialog } from "./edit-session-dialog";
 import type { TeacherForAssignment } from "@/db/actions/users";
 
 type ClassComponentProps = {
@@ -131,7 +133,7 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                     <div className="flex items-center gap-4">
                       <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                       <div>
-                        <div className="font-medium">{session.sessionDate}</div>
+                        <div className="font-medium">{day(session.sessionDate).format('dddd, MMMM D, YYYY')}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -153,6 +155,15 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                             trigger={
                               <Button variant="outline" size="sm">
                                 Mark Attendance
+                              </Button>
+                            }
+                          />
+                          <EditSessionDialog
+                            session={session}
+                            availableTeachers={availableTeachers}
+                            trigger={
+                              <Button variant="outline" size="sm">
+                                <Pencil className="h-4 w-4" />
                               </Button>
                             }
                           />

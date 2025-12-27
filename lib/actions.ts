@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
 import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
-import { createClassSession as createClassSessionInDb } from '@/db/actions/class-sessions';
+import { createClassSession as createClassSessionInDb, updateClassSession as updateClassSessionInDb, deleteClassSession as deleteClassSessionInDb } from '@/db/actions/class-sessions';
 import { createStudentAttendanceRecords } from '@/db/actions/student-attendance';
 import { dayOfWeekEnum } from '@/db/schema';
 import day from 'dayjs';
@@ -215,6 +215,89 @@ export async function createClassSession(
     console.error(e);
     return {
       message: "Database Error: Failed to create session.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
+export type UpdateSessionFormState = {
+  errors?: {
+    id?: string[];
+    teacherId?: string[];
+    sessionDate?: string[];
+  };
+  message?: string | null;
+};
+
+const UpdateClassSessionSchema = z.object({
+  id: z.string().min(1, "Session ID is required"),
+  teacherId: z.string().min(1, "Please select a teacher"),
+  sessionDate: z
+    .string()
+    .min(1, "Session date is required")
+    .refine((date) => {
+      const selectedDate = day(date);
+      const today = day().startOf("day");
+      return selectedDate.isAfter(today) || selectedDate.isSame(today, "day");
+    }, {
+      message: "Session date cannot be in the past",
+    }),
+});
+
+export async function updateClassSession(
+  _prevState: UpdateSessionFormState,
+  formData: FormData
+) {
+  const validatedFields = UpdateClassSessionSchema.safeParse({
+    id: formData.get("id"),
+    teacherId: formData.get("teacherId"),
+    sessionDate: formData.get("sessionDate"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to update session.",
+    };
+  }
+
+  try {
+    await updateClassSessionInDb(validatedFields.data);
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to update session.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
+export type DeleteSessionFormState = {
+  message?: string | null;
+};
+
+export async function deleteClassSession(
+  _prevState: DeleteSessionFormState,
+  formData: FormData
+) {
+  const sessionId = formData.get("sessionId") as string;
+
+  if (!sessionId) {
+    return {
+      message: "Session ID is required.",
+    };
+  }
+
+  try {
+    await deleteClassSessionInDb(sessionId);
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to delete session.",
     };
   }
 
