@@ -19,3 +19,21 @@ export async function getClassSessionsBy(
     offset,
   });
 }
+
+export async function createClassSession(input: {
+  classId: string;
+  teacherId: string;
+  sessionDate: string;
+  createdBy: string;
+}) {
+  const [result] = await db
+    .insert(classSessions)
+    .values(input)
+    .returning();
+
+  if (!result) {
+    throw new Error("Failed to create class session");
+  }
+
+  return result;
+}

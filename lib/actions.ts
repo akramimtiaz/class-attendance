@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
 import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
+import { createClassSession as createClassSessionInDb } from '@/db/actions/class-sessions';
 import { dayOfWeekEnum } from '@/db/schema';
 
 export type StudentFormState = {
@@ -160,4 +161,65 @@ export async function createOrUpdateClass(
   revalidatePath("/classes");
   redirect("/classes");
 }
+
+export type ClassSessionFormState = {
+  errors?: {
+    classId?: string[];
+    teacherId?: string[];
+    sessionDate?: string[];
+  };
+  message?: string | null;
+};
+
+const CreateClassSessionSchema = z.object({
+  classId: z.string().min(1, "Class ID is required"),
+  teacherId: z.string().min(1, "Please select a teacher"),
+  sessionDate: z
+    .string()
+    .min(1, "Session date is required")
+    .refine((date) => {
+      const selectedDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      selectedDate.setHours(0, 0, 0, 0);
+      return selectedDate >= today;
+    }, {
+      message: "Session date cannot be in the past",
+    }),
+});
+
+export async function createClassSession(
+  _prevState: ClassSessionFormState,
+  formData: FormData
+) {
+  const validatedFields = CreateClassSessionSchema.safeParse({
+    classId: formData.get("classId"),
+    teacherId: formData.get("teacherId"),
+    sessionDate: formData.get("sessionDate"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to create session.",
+    };
+  }
+
+  try {
+    // TODO: Get the actual user ID from session/auth
+    await createClassSessionInDb({
+      ...validatedFields.data,
+      createdBy: validatedFields.data.teacherId, // Placeholder user ID
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to create session.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
 

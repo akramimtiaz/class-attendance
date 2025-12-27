@@ -12,6 +12,7 @@ import {
   XCircle,
   Calendar1,
   Eye,
+  Plus,
 } from "lucide-react";
 import {
   Collapsible,
@@ -24,6 +25,7 @@ import { ClassWithSessions } from "@/db/actions/classes";
 import day from 'dayjs';
 import { AttendanceDialog } from "./attendance-dialog";
 import { ClassDialog } from "./class-dialog";
+import { ClassSessionDialog } from "./class-session-dialog";
 import type { TeacherForAssignment } from "@/db/actions/users";
 
 type ClassComponentProps = {
@@ -108,6 +110,17 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Class Sessions</h3>
+                <ClassSessionDialog
+                  classId={classItem.id}
+                  defaultTeacherId={classItem.assignedTeacherId}
+                  availableTeachers={availableTeachers}
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Session
+                    </Button>
+                  }
+                />
               </div>
               <div className="space-y-2">
                 {classItem.classSessions.map((session) => (
