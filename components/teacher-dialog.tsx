@@ -89,6 +89,7 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
                   placeholder="teacher@example.com"
                   defaultValue={teacher?.email}
                   readOnly={!isNewTeacher}
+                  disabled={isReadOnly}
                   aria-describedby="email-error"
                 />
                 <div id="email-error" aria-live="polite" aria-atomic="true">
@@ -123,9 +124,9 @@ export function TeacherDialog({ trigger, teacher }: TeacherDialogProps) {
 
             {!isNewTeacher && (
               <div>
-                <div className="font-semibold text-sm">Assigned Classes</div>
+                <div className="font-semibold text-sm mb-2">Assigned Classes</div>
                 {teacher?.classesAssigned.map((c) => (
-                  <div key={c.className} className="flex flex-row gap-2">
+                  <div key={c.className} className="flex flex-row py-1 gap-2">
                     <Badge>{c.className}</Badge>
                   </div>
                 ))}
