@@ -6,6 +6,7 @@ import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
 import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
 import { createClassSession as createClassSessionInDb } from '@/db/actions/class-sessions';
+import { createStudentAttendanceRecords } from '@/db/actions/student-attendance';
 import { dayOfWeekEnum } from '@/db/schema';
 import day from 'dayjs';
 
@@ -214,6 +215,69 @@ export async function createClassSession(
     console.error(e);
     return {
       message: "Database Error: Failed to create session.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
+export type AttendanceFormState = {
+  errors?: {
+    sessionId?: string[];
+    markedByUserId?: string[];
+    attendance?: string[];
+  };
+  message?: string | null;
+};
+
+const MarkAttendanceSchema = z.object({
+  sessionId: z.string().min(1, "Session ID is required"),
+  markedByUserId: z.string().min(1, "User ID is required"),
+  attendance: z
+    .array(
+      z.object({
+        studentId: z.string().min(1, "Student ID is required"),
+        attended: z.boolean(),
+      })
+    )
+    .min(1, "At least one student must be marked"),
+});
+
+export async function markAttendance(
+  _prevState: AttendanceFormState,
+  formData: FormData
+) {
+  // Parse attendance data from form
+  const studentIds = formData.getAll("studentId") as string[];
+  const attendanceData = studentIds.map((studentId) => ({
+    studentId,
+    attended: formData.get(`attendance-${studentId}`) === "true",
+  }));
+
+  const validatedFields = MarkAttendanceSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+    markedByUserId: formData.get("markedByUserId"),
+    attendance: attendanceData,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to mark attendance.",
+    };
+  }
+
+  try {
+    await createStudentAttendanceRecords({
+      sessionId: validatedFields.data.sessionId,
+      studentAttendance: validatedFields.data.attendance,
+      markedByUserId: validatedFields.data.markedByUserId,
+    });
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to mark attendance.",
     };
   }
 

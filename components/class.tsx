@@ -135,12 +135,13 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {day(session.markedAt).isBefore(day(), "day") && (
-                        <Badge variant="default">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Completed
-                        </Badge>
-                      )}
+                      {session?.markedAt &&
+                        day(session.markedAt).isBefore(day(), "day") && (
+                          <Badge variant="default">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Completed
+                          </Badge>
+                        )}
                       {!session?.markedAt ||
                       day(session.markedAt).isSame(day(), "day") ||
                       day(session.markedAt).isAfter(day(), "day") ? (
@@ -148,6 +149,8 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                           <AttendanceDialog
                             className={classItem.className}
                             students={classItem.classStudents}
+                            sessionId={session.id}
+                            markedByUserId={classItem.assignedTeacherId}
                             trigger={
                               <Button variant="outline" size="sm">
                                 Mark Attendance
