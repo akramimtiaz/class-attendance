@@ -2,7 +2,7 @@
 
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "@/db/drizzle";
-import { classes, classSessions } from "@/db/schema";
+import { classes, classSessions, dayOfWeekEnum } from "@/db/schema";
 import { itemsPerPage } from "@/lib/constants";
 
 export async function getClassById(id: string) {
@@ -88,7 +88,7 @@ export async function getTotalClassesCount() {
 export async function createOrUpdateClass(input: {
   id?: string;
   className: string;
-  dayOfWeek: string;
+  dayOfWeek: (typeof dayOfWeekEnum.enumValues)[number];
   assignedTeacherId: string;
 }) {
   return db.transaction(async (tx) => {
