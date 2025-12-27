@@ -135,16 +135,15 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {session?.markedAt &&
-                        day(session.markedAt).isBefore(day(), "day") && (
-                          <Badge variant="default">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Completed
-                          </Badge>
-                        )}
-                      {!session?.markedAt ||
-                      day(session.markedAt).isSame(day(), "day") ||
-                      day(session.markedAt).isAfter(day(), "day") ? (
+                      {!!session?.markedAt ? (
+                        <Badge variant="default">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Completed
+                        </Badge>
+                      ) : null}
+                      {!session?.markedAt &&
+                      (day(session.sessionDate).isSame(day(), "day") ||
+                        day(session.sessionDate).isAfter(day(), "day")) ? (
                         <>
                           <AttendanceDialog
                             className={classItem.className}
