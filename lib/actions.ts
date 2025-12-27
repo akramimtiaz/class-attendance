@@ -7,6 +7,7 @@ import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/
 import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
 import { createClassSession as createClassSessionInDb } from '@/db/actions/class-sessions';
 import { dayOfWeekEnum } from '@/db/schema';
+import day from 'dayjs';
 
 export type StudentFormState = {
   errors?: {
@@ -126,7 +127,7 @@ const CreateOrUpdateClassSchema = z.object({
   id: z.string().optional(),
   className: z.string().min(1, "Class name is required"),
   dayOfWeek: z.enum(dayOfWeekEnum.enumValues, {
-    errorMap: () => ({ message: "Please select a valid day of the week" }),
+    message: "Please select a valid day of the week",
   }),
   assignedTeacherId: z.string().min(1, "Please select a teacher"),
 });
@@ -178,11 +179,9 @@ const CreateClassSessionSchema = z.object({
     .string()
     .min(1, "Session date is required")
     .refine((date) => {
-      const selectedDate = new Date(date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      selectedDate.setHours(0, 0, 0, 0);
-      return selectedDate >= today;
+      const selectedDate = day(date);
+      const today = day().startOf("day");
+      return selectedDate.isAfter(today) || selectedDate.isSame(today, "day");
     }, {
       message: "Session date cannot be in the past",
     }),
