@@ -11,6 +11,7 @@ import {
   CheckCircle,
   XCircle,
   Calendar1,
+  Eye,
 } from "lucide-react";
 import {
   Collapsible,
@@ -22,12 +23,15 @@ import { useState } from "react";
 import { ClassWithSessions } from "@/db/actions/classes";
 import day from 'dayjs';
 import { AttendanceDialog } from "./attendance-dialog";
+import { ClassDialog } from "./class-dialog";
+import type { TeacherForAssignment } from "@/db/actions/users";
 
 type ClassComponentProps = {
   classItem: ClassWithSessions;
+  availableTeachers: TeacherForAssignment[];
 }
 
-export default function ClassComponent({ classItem }: ClassComponentProps) {
+export default function ClassComponent({ classItem, availableTeachers }: ClassComponentProps) {
   const [openClasses, setOpenClasses] = useState<Record<string, boolean>>({});
 
   const toggleClass = (classId: string) => {
@@ -77,6 +81,15 @@ export default function ClassComponent({ classItem }: ClassComponentProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              <ClassDialog
+                classItem={classItem}
+                availableTeachers={availableTeachers}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <CollapsibleTrigger asChild>
                 <Button variant="outline" size="sm">
                   <span className="mr-2">Sessions</span>

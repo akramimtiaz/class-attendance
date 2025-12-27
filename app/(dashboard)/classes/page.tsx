@@ -3,6 +3,10 @@ import { getClasses, getTotalClassesCount } from "@/db/actions/classes";
 import Pagination from "@/components/pagination";
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { ClassDialog } from "@/components/class-dialog";
+import { getTeachersForAssignment } from "@/db/actions/users";
 
 export default async function ClassesPage(props: {
   searchParams: { page?: string };
@@ -11,6 +15,7 @@ export default async function ClassesPage(props: {
   const currentPage = Number(params?.page) || 1;
   const classes = await getClasses(currentPage);
   const totalClassesCount = await getTotalClassesCount();
+  const availableTeachers = await getTeachersForAssignment();
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -27,17 +32,22 @@ export default async function ClassesPage(props: {
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <CardTitle>All Classes ({totalClassesCount})</CardTitle>
-            {/* <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search teachers..." className="pl-9" />
-            </div> */}
+            <ClassDialog
+              availableTeachers={availableTeachers}
+              trigger={
+                <Button variant={"outline"} style={{ cursor: 'pointer'}}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Class
+                </Button>
+              }
+            />
           </div>
         </CardHeader>
         <Suspense fallback={<h1>Loading...</h1>}>
           <CardContent>
             <div className="space-y-4">
               {classes.map((classItem) => (
-                <ClassComponent key={classItem.id} classItem={classItem} />
+                <ClassComponent key={classItem.id} classItem={classItem} availableTeachers={availableTeachers} />
               ))}
             </div>
             <div className="pt-4">

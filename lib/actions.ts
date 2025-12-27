@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
+import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
+import { dayOfWeekEnum } from '@/db/schema';
 
 export type StudentFormState = {
   errors?: {
@@ -110,4 +112,52 @@ export async function createOrUpdateTeacher(
   redirect("/teachers");
 }
 
+export type ClassFormState = {
+  errors?: {
+    className?: string[];
+    dayOfWeek?: string[];
+    assignedTeacherId?: string[];
+  };
+  message?: string | null;
+};
+
+const CreateOrUpdateClassSchema = z.object({
+  id: z.string().optional(),
+  className: z.string().min(1, "Class name is required"),
+  dayOfWeek: z.enum(dayOfWeekEnum.enumValues, {
+    errorMap: () => ({ message: "Please select a valid day of the week" }),
+  }),
+  assignedTeacherId: z.string().min(1, "Please select a teacher"),
+});
+
+export async function createOrUpdateClass(
+  _prevState: ClassFormState,
+  formData: FormData
+) {
+  const validatedFields = CreateOrUpdateClassSchema.safeParse({
+    id: formData.get("id") || undefined,
+    className: formData.get("className"),
+    dayOfWeek: formData.get("dayOfWeek"),
+    assignedTeacherId: formData.get("assignedTeacherId"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to save class.",
+    };
+  }
+
+  try {
+    await createOrUpdateClassInDb(validatedFields.data);
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to save class.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
 

@@ -84,3 +84,37 @@ export async function getClasses(
 export async function getTotalClassesCount() {
   return db.$count(classes, eq(classes.isDeleted, false));
 }
+
+export async function createOrUpdateClass(input: {
+  id?: string;
+  className: string;
+  dayOfWeek: string;
+  assignedTeacherId: string;
+}) {
+  return db.transaction(async (tx) => {
+    const { id: classId, ...classData } = input;
+
+    let insertedClass: typeof classes.$inferSelect;
+
+    if (classId) {
+      const [result] = await tx
+        .update(classes)
+        .set(classData)
+        .where(eq(classes.id, classId))
+        .returning();
+      insertedClass = result;
+    } else {
+      const [result] = await tx
+        .insert(classes)
+        .values(classData)
+        .returning();
+      insertedClass = result;
+    }
+
+    if (!insertedClass) {
+      throw new Error("Failed to create or update class");
+    }
+
+    return insertedClass;
+  });
+}

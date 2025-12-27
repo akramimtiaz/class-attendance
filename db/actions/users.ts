@@ -55,6 +55,24 @@ export async function getTotalTeachersCount() {
   );
 }
 
+export type TeacherForAssignment = Awaited<
+  ReturnType<typeof getTeachersForAssignment>
+>[number];
+
+export async function getTeachersForAssignment() {
+  return db.query.users.findMany({
+    where: and(
+      eq(users.role, "teacher"),
+      eq(users.isDeleted, false)
+    ),
+    columns: {
+      id: true,
+      name: true,
+    },
+    orderBy: desc(users.createdAt),
+  });
+}
+
 export async function createOrUpdateTeacher(input: {
   id?: string;
   name: string;
