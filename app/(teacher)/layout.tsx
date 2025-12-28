@@ -2,7 +2,7 @@ import Navigation from "@/components/navigation";
 import { getCurrentUser } from "@/lib/dal";
 import { redirect, notFound } from "next/navigation";
 
-export default async function Layout({
+export default async function TeacherLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,8 +14,8 @@ export default async function Layout({
     redirect("/signin");
   }
 
-  // If teacher trying to access admin routes, show 404
-  if (user.role === "teacher") {
+  // If admin trying to access teacher routes, show 404
+  if (user.role === "admin") {
     notFound();
   }
 
@@ -26,3 +26,4 @@ export default async function Layout({
     </div>
   );
 }
+

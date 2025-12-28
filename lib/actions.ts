@@ -215,6 +215,25 @@ export async function createClassSession(
   }
 
   try {
+    // Check for duplicate session (same class + same date)
+    const { db } = await import("@/db/drizzle");
+    const { classSessions } = await import("@/db/schema");
+    const { eq, and } = await import("drizzle-orm");
+    
+    const existingSession = await db.query.classSessions.findFirst({
+      where: and(
+        eq(classSessions.classId, validatedFields.data.classId),
+        eq(classSessions.sessionDate, validatedFields.data.sessionDate)
+      ),
+    });
+
+    if (existingSession) {
+      return {
+        message: "A session for this class on this date already exists.",
+        errors: {},
+      };
+    }
+
     await createClassSessionInDb({
       ...validatedFields.data,
       createdBy: user.id,
@@ -226,8 +245,14 @@ export async function createClassSession(
     };
   }
 
-  revalidatePath("/classes");
-  redirect("/classes");
+  // Redirect based on user role
+  if (user.role === "teacher") {
+    revalidatePath("/sessions");
+    redirect("/sessions");
+  } else {
+    revalidatePath("/classes");
+    redirect("/classes");
+  }
 }
 
 export type UpdateSessionFormState = {

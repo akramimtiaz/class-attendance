@@ -23,6 +23,11 @@ export default function Navigation({ user }: NavigationProps) {
   const pathname = usePathname();
   const [, formAction, isPending] = useActionState(signOut, undefined);
 
+  // Filter navigation items based on user role
+  const visibleNavItems = user?.role === "teacher" 
+    ? [{ href: "/sessions", label: "Sessions", icon: BookOpen }]
+    : navigationItems;
+
   return (
     <nav className="border-b bg-card">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -36,7 +41,7 @@ export default function Navigation({ user }: NavigationProps) {
               <span>ALMA Classes</span>
             </Link>
             <div className="hidden md:flex items-center gap-1">
-              {navigationItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
                 return (

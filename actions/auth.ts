@@ -106,7 +106,16 @@ export async function signInAndRedirect(
   const result = await signIn(prevState, formData)
   
   if (result.success) {
-    redirect('/')
+    // Get user to check role
+    const email = formData.get('email') as string
+    const user = await getUserByEmail(email)
+    
+    // Redirect based on role
+    if (user?.role === 'teacher') {
+      redirect('/sessions')
+    } else {
+      redirect('/')
+    }
   }
   
   return result
@@ -180,7 +189,16 @@ export async function signUpAndRedirect(
   const result = await signUp(prevState, formData)
   
   if (result.success) {
-    redirect('/')
+    // Get user to check role (signup creates teacher by default)
+    const email = formData.get('email') as string
+    const user = await getUserByEmail(email)
+    
+    // Redirect based on role
+    if (user?.role === 'teacher') {
+      redirect('/sessions')
+    } else {
+      redirect('/')
+    }
   }
   
   return result
