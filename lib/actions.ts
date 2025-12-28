@@ -193,6 +193,14 @@ export async function createClassSession(
   _prevState: ClassSessionFormState,
   formData: FormData
 ) {
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return {
+      message: "Unauthorized: You must be logged in to create a session.",
+    };
+  }
+
   const validatedFields = CreateClassSessionSchema.safeParse({
     classId: formData.get("classId"),
     teacherId: formData.get("teacherId"),
@@ -207,10 +215,9 @@ export async function createClassSession(
   }
 
   try {
-    // TODO: Get the actual user ID from session/auth
     await createClassSessionInDb({
       ...validatedFields.data,
-      createdBy: validatedFields.data.teacherId, // Placeholder user ID
+      createdBy: user.id,
     });
   } catch (e) {
     console.error(e);
