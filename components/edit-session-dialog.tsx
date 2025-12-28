@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { updateClassSession, deleteClassSession, UpdateSessionFormState, DeleteSessionFormState } from "@/lib/actions"
+import { updateClassSession, UpdateSessionFormState } from "@/lib/actions"
 import type { TeacherForAssignment } from "@/db/actions/users"
-import { Trash2 } from "lucide-react"
 
 type EditSessionDialogProps = {
   trigger: React.ReactNode
@@ -31,60 +30,27 @@ export function EditSessionDialog({
   session,
   availableTeachers,
 }: EditSessionDialogProps) {
-  const updateFormRef = useRef<HTMLFormElement>(null)
-  const deleteFormRef = useRef<HTMLFormElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const [open, setOpen] = useState(false)
 
-  const updateInitialState = { message: null, errors: {} } as UpdateSessionFormState
-  const [updateState, updateFormAction] = useActionState(updateClassSession, updateInitialState)
-
-  const deleteInitialState = { message: null } as DeleteSessionFormState
-  const [deleteState, deleteFormAction] = useActionState(deleteClassSession, deleteInitialState)
-
-  const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this session?")) {
-      deleteFormRef.current?.requestSubmit()
-    }
-  }
+  const initialState = { message: null, errors: {} } as UpdateSessionFormState
+  const [state, formAction] = useActionState(updateClassSession, initialState)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent showCloseButton={false} className="max-w-2xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle>Edit Session</DialogTitle>
-              {session.createdBy && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Created by {session.createdBy.name}
-                </p>
-              )}
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-          {deleteState.message && (
-            <p className="text-sm text-red-500 mt-2" aria-live="polite">
-              {deleteState.message}
+          <DialogTitle>Edit Session</DialogTitle>
+          {session.createdBy && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Created by {session.createdBy.name}
             </p>
           )}
         </DialogHeader>
-        
-        {/* Hidden delete form - separate from update form */}
-        <form ref={deleteFormRef} action={deleteFormAction} className="hidden">
-          <Input type="hidden" name="sessionId" value={session.id} />
-        </form>
 
-        <form ref={updateFormRef} action={updateFormAction}>
+        <form ref={formRef} action={formAction}>
           <div className="grid gap-6 py-4">
             <Input id="id" type="hidden" name="id" value={session.id} />
             
@@ -100,8 +66,8 @@ export function EditSessionDialog({
                   aria-describedby="sessionDate-error"
                 />
                 <div id="sessionDate-error" aria-live="polite" aria-atomic="true">
-                  {updateState.errors?.sessionDate &&
-                    updateState.errors.sessionDate.map((error: string) => (
+                  {state.errors?.sessionDate &&
+                    state.errors.sessionDate.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
@@ -127,8 +93,8 @@ export function EditSessionDialog({
                   </SelectContent>
                 </Select>
                 <div id="teacher-error" aria-live="polite" aria-atomic="true">
-                  {updateState.errors?.teacherId &&
-                    updateState.errors.teacherId.map((error: string) => (
+                  {state.errors?.teacherId &&
+                    state.errors.teacherId.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
@@ -137,9 +103,9 @@ export function EditSessionDialog({
               </div>
             </div>
 
-            {updateState.message && (
+            {state.message && (
               <div className="text-sm text-red-500" aria-live="polite">
-                {updateState.message}
+                {state.message}
               </div>
             )}
 

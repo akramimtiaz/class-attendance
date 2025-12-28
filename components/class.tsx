@@ -14,6 +14,7 @@ import {
   Eye,
   Plus,
   Pencil,
+  Trash2,
 } from "lucide-react";
 import {
   Collapsible,
@@ -28,6 +29,8 @@ import { AttendanceDialog } from "./attendance-dialog";
 import { ClassDialog } from "./class-dialog";
 import { ClassSessionDialog } from "./class-session-dialog";
 import { EditSessionDialog } from "./edit-session-dialog";
+import { DeleteSessionDialog } from "./delete-session-dialog";
+import { ViewAttendanceDialog } from "./view-attendance-dialog";
 import type { TeacherForAssignment } from "@/db/actions/users";
 
 type ClassComponentProps = {
@@ -134,21 +137,34 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                       <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                       <div>
                         <div className="font-medium">{day(session.sessionDate).format('dddd, MMMM D, YYYY')}</div>
+                        {session.markedBy && (
+                          <span className="text-xs text-muted-foreground">
+                            Marked by {session.markedBy.name}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       {!!session?.markedAt ? (
-                        <div className="flex flex-col items-end gap-1">
+                        <>
+                          {day(session.sessionDate).isBefore(day(), "day") && (
+                            <ViewAttendanceDialog
+                              className={classItem.className}
+                              students={classItem.classStudents}
+                              sessionId={session.id}
+                              sessionDate={session.sessionDate}
+                              trigger={
+                                <Button variant="outline" size="sm">
+                                  View Attendance
+                                </Button>
+                              }
+                            />
+                          )}
                           <Badge variant="default">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Completed
                           </Badge>
-                          {session.markedBy && (
-                            <span className="text-xs text-muted-foreground">
-                              Marked by {session.markedBy.name}
-                            </span>
-                          )}
-                        </div>
+                        </>
                       ) : null}
                       {!session?.markedAt &&
                       (day(session.sessionDate).isSame(day(), "day") ||
@@ -170,6 +186,15 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                             trigger={
                               <Button variant="outline" size="sm">
                                 <Pencil className="h-4 w-4" />
+                              </Button>
+                            }
+                          />
+                          <DeleteSessionDialog
+                            sessionId={session.id}
+                            sessionDate={session.sessionDate}
+                            trigger={
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             }
                           />

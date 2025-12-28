@@ -62,3 +62,23 @@ export async function getAverageAttendanceLast30Days() {
   return Math.round(percentage);
 }
 
+export async function getSessionAttendance(sessionId: string) {
+  return db.query.studentAttendance.findMany({
+    where: eq(studentAttendance.sessionId, sessionId),
+    with: {
+      student: {
+        columns: {
+          id: true,
+          name: true,
+        },
+      },
+      markedBy: {
+        columns: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+}
+
