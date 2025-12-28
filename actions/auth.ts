@@ -68,9 +68,7 @@ export async function signIn(
       return {
         success: false,
         message: 'Invalid email or password',
-        errors: {
-          email: ['Invalid email or password'],
-        },
+        errors: {},
       }
     }
 
@@ -80,9 +78,7 @@ export async function signIn(
       return {
         success: false,
         message: 'Invalid email or password',
-        errors: {
-          password: ['Invalid email or password'],
-        },
+        errors: {},
       }
     }
 
@@ -145,10 +141,8 @@ export async function signUp(
     if (existingUser) {
       return {
         success: false,
-        message: 'User with this email already exists',
-        errors: {
-          email: ['User with this email already exists'],
-        },
+        message: 'An error occurred while creating your account',
+        error: 'Failed to create account',
       }
     }
 
@@ -157,8 +151,8 @@ export async function signUp(
     if (!user) {
       return {
         success: false,
-        message: 'Failed to create user',
-        error: 'Failed to create user',
+        message: 'An error occurred while creating your account',
+        error: 'Failed to create account',
       }
     }
 
