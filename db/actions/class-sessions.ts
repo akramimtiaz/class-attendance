@@ -71,3 +71,23 @@ export async function deleteClassSession(sessionId: string) {
 
   return result;
 }
+
+export async function cancelClassSession(input: {
+  sessionId: string;
+  cancelReason: string;
+}) {
+  const [result] = await db
+    .update(classSessions)
+    .set({
+      cancelled: true,
+      cancelReason: input.cancelReason,
+    })
+    .where(eq(classSessions.id, input.sessionId))
+    .returning();
+
+  if (!result) {
+    throw new Error("Failed to cancel class session");
+  }
+
+  return result;
+}

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createOrUpdateStudentWithClasses } from "@/db/actions/students";
 import { createOrUpdateTeacher as createOrUpdateTeacherInDb} from '@/db/actions/users';
 import { createOrUpdateClass as createOrUpdateClassInDb } from '@/db/actions/classes';
-import { createClassSession as createClassSessionInDb, updateClassSession as updateClassSessionInDb, deleteClassSession as deleteClassSessionInDb } from '@/db/actions/class-sessions';
+import { createClassSession as createClassSessionInDb, updateClassSession as updateClassSessionInDb, deleteClassSession as deleteClassSessionInDb, cancelClassSession as cancelClassSessionInDb } from '@/db/actions/class-sessions';
 import { createStudentAttendanceRecords } from '@/db/actions/student-attendance';
 import { dayOfWeekEnum } from '@/db/schema';
 import day from 'dayjs';
@@ -306,6 +306,51 @@ export async function deleteClassSession(
     console.error(e);
     return {
       message: "Database Error: Failed to delete session.",
+    };
+  }
+
+  revalidatePath("/classes");
+  redirect("/classes");
+}
+
+export type CancelSessionFormState = {
+  errors?: {
+    sessionId?: string[];
+    cancelReason?: string[];
+  };
+  message?: string | null;
+};
+
+const CancelClassSessionSchema = z.object({
+  sessionId: z.string().min(1, "Session ID is required"),
+  cancelReason: z
+    .string()
+    .min(10, "Cancellation reason is required")
+    .max(300, "Cancellation reason must be 300 characters or less"),
+});
+
+export async function cancelClassSession(
+  _prevState: CancelSessionFormState,
+  formData: FormData
+) {
+  const validatedFields = CancelClassSessionSchema.safeParse({
+    sessionId: formData.get("sessionId"),
+    cancelReason: formData.get("cancelReason"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to cancel session.",
+    };
+  }
+
+  try {
+    await cancelClassSessionInDb(validatedFields.data);
+  } catch (e) {
+    console.error(e);
+    return {
+      message: "Database Error: Failed to cancel session.",
     };
   }
 

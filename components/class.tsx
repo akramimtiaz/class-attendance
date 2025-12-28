@@ -30,6 +30,7 @@ import { ClassDialog } from "./class-dialog";
 import { ClassSessionDialog } from "./class-session-dialog";
 import { EditSessionDialog } from "./edit-session-dialog";
 import { DeleteSessionDialog } from "./delete-session-dialog";
+import { CancelSessionDialog } from "./cancel-session-dialog";
 import { ViewAttendanceDialog } from "./view-attendance-dialog";
 import type { TeacherForAssignment } from "@/db/actions/users";
 
@@ -189,6 +190,18 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                               </Button>
                             }
                           />
+                          {(day(session.sessionDate).isSame(day(), "day") ||
+                            day(session.sessionDate).isAfter(day(), "day")) && (
+                            <CancelSessionDialog
+                              sessionId={session.id}
+                              sessionDate={session.sessionDate}
+                              trigger={
+                                <Button variant="outline" size="sm">
+                                  <XCircle className="h-4 w-4" />
+                                </Button>
+                              }
+                            />
+                          )}
                           <DeleteSessionDialog
                             sessionId={session.id}
                             sessionDate={session.sessionDate}
