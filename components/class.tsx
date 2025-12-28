@@ -151,7 +151,6 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                             className={classItem.className}
                             students={classItem.classStudents}
                             sessionId={session.id}
-                            markedByUserId={classItem.assignedTeacherId}
                             trigger={
                               <Button variant="outline" size="sm">
                                 Mark Attendance

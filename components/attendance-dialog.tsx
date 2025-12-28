@@ -23,7 +23,6 @@ type AttendanceDialogProps = {
   className: string;
   students: ClassWithSessions["classStudents"];
   sessionId: string;
-  markedByUserId: string;
 };
 
 export function AttendanceDialog({
@@ -31,7 +30,6 @@ export function AttendanceDialog({
   students,
   className,
   sessionId,
-  markedByUserId,
 }: AttendanceDialogProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
@@ -70,7 +68,6 @@ export function AttendanceDialog({
         <form ref={formRef} action={formAction}>
           <div className="py-4">
             <Input type="hidden" name="sessionId" value={sessionId} />
-            <Input type="hidden" name="markedByUserId" value={markedByUserId} />
             
             {state.errors?.attendance && (
               <div className="mb-2 text-sm text-red-500" aria-live="polite">

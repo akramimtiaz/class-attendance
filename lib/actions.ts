@@ -9,6 +9,7 @@ import { createClassSession as createClassSessionInDb, updateClassSession as upd
 import { createStudentAttendanceRecords } from '@/db/actions/student-attendance';
 import { dayOfWeekEnum } from '@/db/schema';
 import day from 'dayjs';
+import { getCurrentUser } from '@/lib/dal';
 
 export type StudentFormState = {
   errors?: {
@@ -308,7 +309,6 @@ export async function deleteClassSession(
 export type AttendanceFormState = {
   errors?: {
     sessionId?: string[];
-    markedByUserId?: string[];
     attendance?: string[];
   };
   message?: string | null;
@@ -316,7 +316,6 @@ export type AttendanceFormState = {
 
 const MarkAttendanceSchema = z.object({
   sessionId: z.string().min(1, "Session ID is required"),
-  markedByUserId: z.string().min(1, "User ID is required"),
   attendance: z
     .array(
       z.object({
@@ -331,6 +330,15 @@ export async function markAttendance(
   _prevState: AttendanceFormState,
   formData: FormData
 ) {
+  // Get the current authenticated user
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return {
+      message: "Unauthorized: You must be logged in to mark attendance.",
+    };
+  }
+
   // Parse attendance data from form
   const studentIds = formData.getAll("studentId") as string[];
   const attendanceData = studentIds.map((studentId) => ({
@@ -340,7 +348,6 @@ export async function markAttendance(
 
   const validatedFields = MarkAttendanceSchema.safeParse({
     sessionId: formData.get("sessionId"),
-    markedByUserId: formData.get("markedByUserId"),
     attendance: attendanceData,
   });
 
@@ -355,7 +362,7 @@ export async function markAttendance(
     await createStudentAttendanceRecords({
       sessionId: validatedFields.data.sessionId,
       studentAttendance: validatedFields.data.attendance,
-      markedByUserId: validatedFields.data.markedByUserId,
+      markedByUserId: user.id,
     });
   } catch (e) {
     console.error(e);
