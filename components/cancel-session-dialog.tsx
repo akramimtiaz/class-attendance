@@ -5,10 +5,10 @@ import { useActionState, useRef, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { cancelClassSession, CancelSessionFormState } from "@/lib/actions"
 import { XCircle } from "lucide-react"
+import day from 'dayjs';
 
 type CancelSessionDialogProps = {
   trigger: React.ReactNode
@@ -41,7 +41,7 @@ export function CancelSessionDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Cancel Session</DialogTitle>
+          <DialogTitle>Cancel Session - {day(sessionDate).format("DD/MM/YYYY")}</DialogTitle>
         </DialogHeader>
 
         <div className="py-4">
