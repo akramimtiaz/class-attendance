@@ -6,14 +6,14 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-min-32-chars-long!!!'
 )
 
-// Routes that require authentication
-const protectedRoutes = ['/']
-
-// Routes that should redirect to dashboard if authenticated
-const authRoutes = ['/signin', '/signup']
+// Public routes that don't require authentication
+const publicRoutes = ['/signin', '/signup']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+  
+  // Check if it's a public route
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
   
   // Get auth token from cookies
   const token = request.cookies.get('auth_token')?.value
@@ -24,32 +24,29 @@ export async function proxy(request: NextRequest) {
     try {
       await jose.jwtVerify(token, JWT_SECRET)
       isAuthenticated = true
-    } catch (error) {
+    } catch {
       // Token is invalid or expired
       isAuthenticated = false
     }
   }
 
-  // Check if the route requires authentication
-  const isProtectedRoute = protectedRoutes.some(route => 
-    pathname === route || pathname.startsWith(route)
-  )
-  
-  // Check if it's an auth route (signin/signup)
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
+  // If it's a public route (signin/signup)
+  if (isPublicRoute) {
+    // If user is already authenticated, redirect to dashboard
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    // Otherwise, allow access to the public route
+    return NextResponse.next()
+  }
 
-  // Redirect to signin if trying to access protected route without authentication
-  if (isProtectedRoute && !isAuthenticated) {
+  // For all other routes (protected routes), require authentication
+  if (!isAuthenticated) {
     const signInUrl = new URL('/signin', request.url)
-    signInUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(signInUrl)
   }
 
-  // Redirect to dashboard if authenticated user tries to access auth pages
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
+  // User is authenticated, allow access
   return NextResponse.next()
 }
 

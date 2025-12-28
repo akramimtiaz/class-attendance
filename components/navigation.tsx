@@ -16,7 +16,7 @@ const navigationItems = [
 ];
 
 type NavigationProps = {
-  user: User;
+  user?: User | null;
 };
 
 export default function Navigation({ user }: NavigationProps) {
@@ -58,7 +58,7 @@ export default function Navigation({ user }: NavigationProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user.name}</span>
+            <span className="text-sm text-muted-foreground">{user?.name}</span>
             <form action={formAction}>
               <button 
                 type="submit"
