@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import * as jose from 'jose'
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-min-32-chars-long!!!'
+  process.env.JWT_SECRET!
 )
 
 // Public routes that don't require authentication
