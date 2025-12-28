@@ -151,7 +151,6 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                           {day(session.sessionDate).isBefore(day(), "day") && (
                             <ViewAttendanceDialog
                               className={classItem.className}
-                              students={classItem.classStudents}
                               sessionId={session.id}
                               sessionDate={session.sessionDate}
                               trigger={

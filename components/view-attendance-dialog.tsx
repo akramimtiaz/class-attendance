@@ -14,14 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle } from "lucide-react";
-import { ClassWithSessions } from "@/db/actions/classes";
 import { getSessionAttendance } from "@/db/actions/student-attendance";
 import day from "dayjs";
 
 type ViewAttendanceDialogProps = {
   trigger: React.ReactNode;
   className: string;
-  students: ClassWithSessions["classStudents"];
   sessionId: string;
   sessionDate: string;
 };
@@ -45,7 +43,6 @@ type AttendanceRecord = {
 
 export function ViewAttendanceDialog({
   trigger,
-  students,
   className,
   sessionId,
   sessionDate,
@@ -66,14 +63,9 @@ export function ViewAttendanceDialog({
     }
   }, [open, sessionId]);
 
-  // Create a map of student attendance
-  const attendanceMap = new Map(
-    attendanceRecords.map((record) => [record.studentId, record.attended ?? false])
-  );
-
   // Count students who attended
-  const presentCount = Array.from(attendanceMap.values()).filter(Boolean).length;
-  const totalCount = students.length;
+  const presentCount = attendanceRecords.filter((record) => record.attended).length;
+  const totalCount = attendanceRecords.length;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -102,29 +94,28 @@ export function ViewAttendanceDialog({
               </div>
               
               <div className="space-y-2">
-                {students.map((s) => {
-                  const attended = attendanceMap.get(s.student.id) ?? false;
+                {attendanceRecords.map((record) => {
                   return (
                     <div
-                      key={s.student.id}
+                      key={record.student.id}
                       className="flex items-center justify-between p-3 rounded-lg border"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
                           <AvatarFallback>
-                            {s.student.name
+                            {record.student.name
                               .split(" ")
                               .map((n) => n[0])
                               .join("")}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="font-medium">{s.student.name}</div>
+                        <div className="font-medium">{record.student.name}</div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Checkbox
-                          checked={attended}
+                          checked={record.attended ?? false}
                           disabled
-                          id={`student-${s.student.id}`}
+                          id={`student-${record.student.id}`}
                         />
                       </div>
                     </div>
