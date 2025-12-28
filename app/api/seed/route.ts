@@ -28,7 +28,7 @@ async function seedDb() {
       admins.map((a) => ({
         ...a,
         role: schema.userRoleEnum.enumValues[0],
-        hashedPassword: "password",
+        password: "password",
       }))
     ).returning();
 
@@ -38,7 +38,7 @@ async function seedDb() {
       .values({
         ...teacher,
         role: schema.userRoleEnum.enumValues[1],
-        hashedPassword: "password",
+        password: "password",
       })
       .returning();
 

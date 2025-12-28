@@ -106,7 +106,7 @@ export async function createOrUpdateTeacher(input: {
           ...rest,
           role: userRoleEnum.enumValues[1],
           // todo: update
-          hashedPassword: 'password',
+          password: 'password',
         })
         .returning();
 
