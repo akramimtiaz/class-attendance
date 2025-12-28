@@ -18,6 +18,10 @@ type EditSessionDialogProps = {
     id: string
     teacherId: string
     sessionDate: string
+    createdBy?: {
+      id: string
+      name: string
+    } | null
   }
   availableTeachers: TeacherForAssignment[]
 }
@@ -50,7 +54,14 @@ export function EditSessionDialog({
       <DialogContent showCloseButton={false} className="max-w-2xl">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle>Edit Session</DialogTitle>
+            <div>
+              <DialogTitle>Edit Session</DialogTitle>
+              {session.createdBy && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Created by {session.createdBy.name}
+                </p>
+              )}
+            </div>
             <Button
               type="button"
               variant="ghost"

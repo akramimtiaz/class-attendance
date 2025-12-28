@@ -71,6 +71,20 @@ export async function getClasses(
           markedAt: true,
           cancelled: true,
         },
+        with: {
+          markedBy: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
+          createdBy: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
+        },
         orderBy: desc(classSessions.sessionDate),
         limit: 3,
       },

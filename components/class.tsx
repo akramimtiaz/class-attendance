@@ -138,10 +138,17 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                     </div>
                     <div className="flex items-center gap-3">
                       {!!session?.markedAt ? (
-                        <Badge variant="default">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Completed
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge variant="default">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Completed
+                          </Badge>
+                          {session.markedBy && (
+                            <span className="text-xs text-muted-foreground">
+                              Marked by {session.markedBy.name}
+                            </span>
+                          )}
+                        </div>
                       ) : null}
                       {!session?.markedAt &&
                       (day(session.sessionDate).isSame(day(), "day") ||
