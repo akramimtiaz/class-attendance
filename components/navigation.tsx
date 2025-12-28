@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { BookOpen, Users, GraduationCap, LayoutDashboard } from "lucide-react";
+import { signOut } from "@/actions/auth";
+import { useActionState } from "react";
+import type { User } from "@/db/schema";
 
 const navigationItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -12,8 +15,13 @@ const navigationItems = [
   { href: "/classes", label: "Classes", icon: BookOpen },
 ];
 
-export default function Navigation() {
+type NavigationProps = {
+  user: User;
+};
+
+export default function Navigation({ user }: NavigationProps) {
   const pathname = usePathname();
+  const [, formAction, isPending] = useActionState(signOut, undefined);
 
   return (
     <nav className="border-b bg-card">
@@ -21,11 +29,11 @@ export default function Navigation() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
-              href="/admin"
+              href="/"
               className="flex items-center gap-2 font-semibold text-lg"
             >
               <BookOpen className="h-6 w-6 text-primary" />
-              <span>Quran Classes</span>
+              <span>ALMA Classes</span>
             </Link>
             <div className="hidden md:flex items-center gap-1">
               {navigationItems.map((item) => {
@@ -50,10 +58,16 @@ export default function Navigation() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Username</span>
-            <button className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
-              Logout
-            </button>
+            <span className="text-sm text-muted-foreground">{user.name}</span>
+            <form action={formAction}>
+              <button 
+                type="submit"
+                disabled={isPending}
+                className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+              >
+                {isPending ? 'Logging out...' : 'Logout'}
+              </button>
+            </form>
           </div>
         </div>
       </div>

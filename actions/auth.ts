@@ -20,6 +20,8 @@ const SignInSchema = z.object({
 // Define Zod schema for signup validation
 const SignUpSchema = z
   .object({
+    name: z.string().min(1, 'Name is required'),
+    phoneNumber: z.string().min(1, 'Phone number is required'),
     email: z.string().min(1, 'Email is required').email('Invalid email format'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
@@ -39,7 +41,10 @@ export type ActionResponse = {
   error?: string
 }
 
-export async function signIn(formData: FormData): Promise<ActionResponse> {
+export async function signIn(
+  _prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
   try {
     // Extract data from form
     const data = {
@@ -98,7 +103,23 @@ export async function signIn(formData: FormData): Promise<ActionResponse> {
   }
 }
 
-export async function signUp(formData: FormData): Promise<ActionResponse> {
+export async function signInAndRedirect(
+  prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
+  const result = await signIn(prevState, formData)
+  
+  if (result.success) {
+    redirect('/')
+  }
+  
+  return result
+}
+
+export async function signUp(
+  _prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
   try {
     // Extract data from form
     const data = {
@@ -156,6 +177,19 @@ export async function signUp(formData: FormData): Promise<ActionResponse> {
       error: 'Failed to create account',
     }
   }
+}
+
+export async function signUpAndRedirect(
+  prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
+  const result = await signUp(prevState, formData)
+  
+  if (result.success) {
+    redirect('/')
+  }
+  
+  return result
 }
 
 export async function signOut(): Promise<void> {
