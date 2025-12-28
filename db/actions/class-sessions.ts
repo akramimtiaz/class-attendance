@@ -75,12 +75,14 @@ export async function deleteClassSession(sessionId: string) {
 export async function cancelClassSession(input: {
   sessionId: string;
   cancelReason: string;
+  markedByUserId: string;
 }) {
   const [result] = await db
     .update(classSessions)
     .set({
       cancelled: true,
       cancelReason: input.cancelReason,
+      markedByUserId: input.markedByUserId,
     })
     .where(eq(classSessions.id, input.sessionId))
     .returning();

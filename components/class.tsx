@@ -167,7 +167,7 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                           </Badge>
                         </>
                       ) : null}
-                      {!session?.markedAt &&
+                      {!session?.markedAt && !session.cancelled &&
                       (day(session.sessionDate).isSame(day(), "day") ||
                         day(session.sessionDate).isAfter(day(), "day")) ? (
                         <>

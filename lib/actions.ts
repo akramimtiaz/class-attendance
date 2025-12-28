@@ -333,6 +333,13 @@ export async function cancelClassSession(
   _prevState: CancelSessionFormState,
   formData: FormData
 ) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return {
+      message: "Unauthorized: You must be logged in to create a session.",
+    };
+  }
+
   const validatedFields = CancelClassSessionSchema.safeParse({
     sessionId: formData.get("sessionId"),
     cancelReason: formData.get("cancelReason"),
@@ -346,7 +353,11 @@ export async function cancelClassSession(
   }
 
   try {
-    await cancelClassSessionInDb(validatedFields.data);
+    await cancelClassSessionInDb({
+      sessionId: validatedFields.data.sessionId,
+      cancelReason: validatedFields.data.cancelReason,
+      markedByUserId: user.id,
+    });
   } catch (e) {
     console.error(e);
     return {
