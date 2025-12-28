@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useActionState, useRef, useState } from "react"
+import { useActionState, useRef, useState, useMemo } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,17 +10,44 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createClassSession, ClassSessionFormState } from "@/lib/actions"
 import type { TeacherForAssignment } from "@/db/actions/users"
+import { dayOfWeekEnum } from "@/db/schema"
+import day from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+
+day.extend(weekday);
+
+type DayOfWeek = typeof dayOfWeekEnum.enumValues[number]
 
 type ClassSessionDialogProps = {
   trigger: React.ReactNode
   classId: string
+  dayOfWeek: DayOfWeek
   defaultTeacherId: string
   availableTeachers: TeacherForAssignment[]
+}
+
+function getNextOccurrenceOfDay(dayOfWeek: DayOfWeek): string {
+  const dayMap = dayOfWeekEnum.enumValues.reduce((acc, d, index) => {
+    return {
+      ...acc,
+      [d]: index + 1,
+    };
+  }, {} as Record<DayOfWeek, number>);
+
+  const today = day().day();
+  const targetDayNum = dayMap[dayOfWeek];
+
+  if ((today === 0 && dayOfWeek === 'SUNDAY') || today === targetDayNum) {
+    return day().format('YYYY-MM-DD');
+  }
+  
+  return day().weekday(targetDayNum).format('YYYY-MM-DD');
 }
 
 export function ClassSessionDialog({
   trigger,
   classId,
+  dayOfWeek,
   defaultTeacherId,
   availableTeachers,
 }: ClassSessionDialogProps) {
@@ -30,6 +57,8 @@ export function ClassSessionDialog({
 
   const initialState = { message: null, errors: {} } as ClassSessionFormState
   const [state, formAction] = useActionState(createClassSession, initialState)
+
+  const defaultSessionDate = useMemo(() => getNextOccurrenceOfDay(dayOfWeek), [dayOfWeek])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,6 +78,7 @@ export function ClassSessionDialog({
                   id="sessionDate"
                   name="sessionDate"
                   type="date"
+                  defaultValue={defaultSessionDate}
                   placeholder="Select session date"
                   aria-describedby="sessionDate-error"
                 />

@@ -117,6 +117,7 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                 <h3 className="font-semibold">Class Sessions</h3>
                 <ClassSessionDialog
                   classId={classItem.id}
+                  dayOfWeek={classItem.dayOfWeek}
                   defaultTeacherId={classItem.assignedTeacherId}
                   availableTeachers={availableTeachers}
                   trigger={
