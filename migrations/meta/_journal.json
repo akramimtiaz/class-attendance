@@ -15,6 +15,13 @@
       "when": 1766284633072,
       "tag": "0001_calm_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767002723409,
+      "tag": "0002_public_ma_gnuci",
+      "breakpoints": true
     }
   ]
 }

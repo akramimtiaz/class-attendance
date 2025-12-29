@@ -103,6 +103,7 @@ async function seedDb() {
 
 export async function GET() {
   try {
+    return;
     await reset(db, dbSchema);
     await seedDb();
     return Response.json({ message: "Database seeded successfully!" });
