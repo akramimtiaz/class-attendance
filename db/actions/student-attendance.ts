@@ -54,11 +54,16 @@ export async function getAverageAttendanceLast30Days() {
       )
     );
 
-  if (!result[0] || result[0].totalAttendance === 0) {
+  const { totalAttendance = 0, presentCount = 0 } = result?.[0] ?? {};
+  if (!totalAttendance || !presentCount) {
     return 0;
   }
 
-  const percentage = (result[0].presentCount / result[0].totalAttendance) * 100;
+  if (totalAttendance === 0 || presentCount === 0) {
+    return 0;
+  }
+
+  const percentage = (presentCount / totalAttendance) * 100;
   return Math.round(percentage);
 }
 
