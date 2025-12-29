@@ -14,14 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle } from "lucide-react";
-import { ClassWithSessions } from "@/db/actions/classes";
 import { markAttendance, AttendanceFormState } from "@/lib/actions";
 import { Input } from "@/components/ui/input";
 
 type AttendanceDialogProps = {
   trigger: React.ReactNode;
   className: string;
-  students: ClassWithSessions["classStudents"];
+  students: { id: string; name: string; }[];
   sessionId: string;
 };
 
@@ -35,7 +34,7 @@ export function AttendanceDialog({
   const [open, setOpen] = useState(false);
   const [toggleAllEnabled, setToggleAllEnabled] = useState<boolean>(false);
   const [attendance, setAttendance] = useState<Record<string, boolean>>(
-    Object.fromEntries(students.map((s) => [s.student.id, false]))
+    Object.fromEntries(students.map((s) => [s.id, false]))
   );
 
   const initialState = { message: null, errors: {} } as AttendanceFormState;
@@ -107,34 +106,34 @@ export function AttendanceDialog({
             <div className="space-y-2">
               {students.map((s) => (
                 <div
-                  key={s.student.id}
+                  key={s.id}
                   className="flex items-center justify-between p-3 rounded-lg border hover:bg-secondary/50 transition-colors"
                 >
-                  <Input type="hidden" name="studentId" value={s.student.id} />
+                  <Input type="hidden" name="studentId" value={s.id} />
                   <Input
                     type="hidden"
-                    name={`attendance-${s.student.id}`}
-                    value={attendance[s.student.id] ? "true" : "false"}
+                    name={`attendance-${s.id}`}
+                    value={attendance[s.id] ? "true" : "false"}
                   />
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback>
-                        {s.student.name
+                        {s.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="font-medium">{s.student.name}</div>
+                    <div className="font-medium">{s.name}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Checkbox
-                      checked={attendance[s.student.id]}
-                      onCheckedChange={() => toggleAttendance(s.student.id)}
-                      id={`student-${s.student.id}`}
+                      checked={attendance[s.id]}
+                      onCheckedChange={() => toggleAttendance(s.id)}
+                      id={`student-${s.id}`}
                     />
                     <label
-                      htmlFor={`student-${s.student.id}`}
+                      htmlFor={`student-${s.id}`}
                       className="text-sm text-muted-foreground cursor-pointer"
                     >
                       Present

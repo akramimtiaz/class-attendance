@@ -46,6 +46,11 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
     setOpenClasses((prev) => ({ ...prev, [classId]: !prev[classId] }));
   };
 
+  const students = classItem.classStudents.map((s) => ({
+    id: s.student.id,
+    name: s.student.name,
+  }));
+
   return (
     <Card>
       <Collapsible
@@ -138,7 +143,11 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                     <div className="flex items-center gap-4">
                       <Calendar className="h-5 w-5 text-muted-foreground shrink-0" />
                       <div>
-                        <div className="font-medium">{day(session.sessionDate).format('dddd, MMMM D, YYYY')}</div>
+                        <div className="font-medium">
+                          {day(session.sessionDate).format(
+                            "dddd, MMMM D, YYYY"
+                          )}
+                        </div>
                         {session.markedBy && (
                           <span className="text-xs text-muted-foreground">
                             Marked by {session.markedBy.name}
@@ -167,13 +176,14 @@ export default function ClassComponent({ classItem, availableTeachers }: ClassCo
                           </Badge>
                         </>
                       ) : null}
-                      {!session?.markedAt && !session.cancelled &&
+                      {!session?.markedAt &&
+                      !session.cancelled &&
                       (day(session.sessionDate).isSame(day(), "day") ||
                         day(session.sessionDate).isAfter(day(), "day")) ? (
                         <>
                           <AttendanceDialog
                             className={classItem.className}
-                            students={classItem.classStudents}
+                            students={students}
                             sessionId={session.id}
                             trigger={
                               <Button variant="outline" size="sm">
